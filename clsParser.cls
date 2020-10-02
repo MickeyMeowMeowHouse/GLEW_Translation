@@ -110,6 +110,20 @@ Trimmed = Trim$(Expression)
 If Left$(Trimmed, 1) = "#" Then IsMacro = True
 End Function
 
+Private Function SearchInString(ByVal Start As Long, String1 As String, String2 As String, Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Long
+If Start = 0 Then Start = 1
+SearchInString = InStr(Start, String1, String2, Compare)
+If SearchInString = 0 Then SearchInString = Len(String1) + 1
+End Function
+
+Private Function Min(ByVal A As Long, ByVal B As Long) As Long
+If A > B Then Min = B Else Min = A
+End Function
+
+Private Function Max(ByVal A As Long, ByVal B As Long) As Long
+If A > B Then Max = A Else Max = B
+End Function
+
 '对比字符串前缀
 Private Function HasPrefix(Expression As String, Prefix As String) As Boolean
 If Left$(Expression, Len(Prefix)) = Prefix Then HasPrefix = True
@@ -315,20 +329,6 @@ Params = Replace(Params, ", ", ",")
 LooksLikeFuncPtrDef = True
 End Function
 
-Private Function SearchInString(ByVal Start As Long, String1 As String, String2 As String, Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Long
-If Start = 0 Then Start = 1
-SearchInString = InStr(Start, String1, String2, Compare)
-If SearchInString = 0 Then SearchInString = Len(String1) + 1
-End Function
-
-Private Function Min(ByVal A As Long, ByVal B As Long) As Long
-If A > B Then Min = B Else Min = A
-End Function
-
-Private Function Max(ByVal A As Long, ByVal B As Long) As Long
-If A > B Then Max = A Else Max = B
-End Function
-
 Function RemoveComments(StringWithComments As String) As String
 Dim Quote As Long
 Dim ComOpen As Long
@@ -337,7 +337,6 @@ Dim Nesting As Long
 Dim CurPos As Long
 
 RemoveComments = StringWithComments
-
 Do
     '先跳过所有双引号内的内容
     Quote = SearchInString(CurPos, StringWithComments, """")
@@ -425,7 +424,7 @@ Dim FuncParams As String
 Dim I As Long
 
 m_CurPrefix = LCase$(Prefix)
-m_CurPrefix2 = Left$(m_CurPrefix, Len(m_CurPrefix) - 2) '去掉EW结尾
+m_CurPrefix2 = Left$(m_CurPrefix, Len(m_CurPrefix) - 2) 'Remove `EW' suffix
 'Set MacroToLookup = CreateObject("Scripting.Dictionary")
 
 Open HeaderFilePath For Input As #FN

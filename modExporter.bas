@@ -267,14 +267,14 @@ Case 1
 Case 2
     Select Case ParamType
     Case "char**"
-        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+        PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
         ParamType = "String()"
     Case "GLchar**"
-        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+        PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
         ParamType = "String()"
     Case "wchar_t**"
-        PassType = "<MarshalAs(UnmanagedType.LPWStr)> ByVal "
-        ParamType = "String()"
+        PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
+        ParamType = "IntPtr()"
     Case Else
         PassType = "ByRef "
         ParamType = "IntPtr"
