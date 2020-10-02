@@ -207,9 +207,10 @@ End Function
 Function DoParamRename(Param As String, Optional DefaultName As String = "param") As String
 Dim Trimmed As String
 Trimmed = Trim$(Replace(Param, "const ", ""))
+Trimmed = Trim$(Replace(Trimmed, "const*", "*"))
 Trimmed = Replace(Trimmed, "*", "* ")
-Trimmed = Replace(Trimmed, " *", "*")
 Trimmed = Replace(Trimmed, "  ", " ")
+Trimmed = Replace(Trimmed, " *", "*")
 
 Dim PassType As String, ParamType As String, ParamName As String
 Dim DelimPos As Long, IsReserved As Boolean
@@ -262,6 +263,21 @@ Case 1
     Case Else
         PassType = "ByRef "
         ParamType = DoTypeConv(Replace(ParamType, "*", ""))
+    End Select
+Case 2
+    Select Case ParamType
+    Case "char**"
+        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+        ParamType = "String()"
+    Case "GLchar**"
+        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+        ParamType = "String()"
+    Case "wchar_t**"
+        PassType = "<MarshalAs(UnmanagedType.LPWStr)> ByVal "
+        ParamType = "String()"
+    Case Else
+        PassType = "ByRef "
+        ParamType = "IntPtr"
     End Select
 Case Else
     PassType = "ByRef "

@@ -92,6 +92,9 @@ Show
 HeaderParse.ParseHeaderFile App.Path & "\glew.h", "glew"
 HeaderParse.ParseHeaderFile App.Path & "\wglew.h", "wglew"
 
+'Export the parsed C code to VB.NET
+ExportVB_NET HeaderParse, App.Path & "\GL_API.vb"
+
 'Show in the TreeView
 Dim ExtensionString
 Dim Extension As clsGLExtension
@@ -111,9 +114,6 @@ Dim ErrKeys
 For Each ErrKeys In HeaderParse.ErrorReport.Keys
     txtErrReport.SelText = HeaderParse.ErrorReport(ErrKeys) & vbCrLf
 Next
-
-'Export the parsed C code to VB.NET
-ExportVB_NET HeaderParse, App.Path & "\GL_API.vb"
 End Sub
 
 Private Sub AddFuncToNode(IsAPI As Boolean, ExtensionString As String, NodeKey As String)
