@@ -1,6 +1,29 @@
 Attribute VB_Name = "modExporter"
+'MIT License
+'
+'Copyright (c) 2020 0xAA55-Official-Org
+'
+'Permission is hereby granted, free of charge, to any person obtaining a copy
+'of this software and associated documentation files (the "Software"), to deal
+'in the Software without restriction, including without limitation the rights
+'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+'copies of the Software, and to permit persons to whom the Software is
+'furnished to do so, subject to the following conditions:
+'
+'The above copyright notice and this permission notice shall be included in all
+'copies or substantial portions of the Software.
+'
+'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+'SOFTWARE.
+
 Option Explicit
 
+'Merge two dictionaries
 Function MergeDict(Dict1 As Dictionary, Dict2 As Dictionary) As Dictionary
 Dim Ret As New Dictionary
 Dim Key
@@ -16,6 +39,7 @@ Next
 Set MergeDict = Ret
 End Function
 
+'Do type conversions
 Function DoTypeConv(TypeDesc As String) As String
 Select Case TypeDesc
 Case "GLenum"
@@ -49,7 +73,7 @@ Case "GLdouble"
 Case "GLclampd"
     DoTypeConv = "Double"
 Case "GLvoid"
-    DoTypeConv = "Void"
+    DoTypeConv = "Object"
 Case "GLint64EXT"
     DoTypeConv = "Int64"
 Case "GLuint64EXT"
@@ -89,17 +113,17 @@ Case "GLvdpauSurfaceNV"
 Case "GLclampx"
     DoTypeConv = "Int32"
 Case "HPBUFFERARB"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "HPBUFFEREXT"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "HGPUNV"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "HVIDEOOUTPUTDEVICENV"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "HVIDEOINPUTDEVICENV"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "HPVIDEODEV"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "FLOAT"
     DoTypeConv = "Single"
 Case "float"
@@ -127,7 +151,7 @@ Case "HGLRC"
 Case "HANDLE"
     DoTypeConv = "IntPtr"
 Case "LPVOID"
-    DoTypeConv = "IntPtr"
+    DoTypeConv = "Object"
 Case "PGPU_DEVICE"
     DoTypeConv = "IntPtr"
 Case "GLUquadric"
@@ -142,6 +166,7 @@ Case Else
 End Select
 End Function
 
+'Do type conversion but only for the return type
 Function DoRetTypeConv(RetType As String) As String
 Dim Trimmed As String
 Trimmed = Trim$(Replace(RetType, "const ", ""))
@@ -149,12 +174,13 @@ Trimmed = Trim$(Replace(RetType, "const ", ""))
 If InStr(Trimmed, "*") Then
     Trimmed = Replace(Trimmed, " *", "*")
     Select Case Trimmed
+    'You don't want the memory allocated from an API as a return value freed by CLR
     Case "GLubyte*"
-        DoRetTypeConv = "String"
+        DoRetTypeConv = "IntPtr"
     Case "GLchar*"
-        DoRetTypeConv = "String"
+        DoRetTypeConv = "IntPtr"
     Case "char*"
-        DoRetTypeConv = "String"
+        DoRetTypeConv = "IntPtr"
     Case "void*"
         DoRetTypeConv = "IntPtr"
     Case "wchar_t*"
@@ -177,6 +203,7 @@ Loop While I
 GetPointerLevel = GetPointerLevel - 1
 End Function
 
+'Rename the parameters if necessary
 Function DoParamRename(Param As String, Optional DefaultName As String = "param") As String
 Dim Trimmed As String
 Trimmed = Trim$(Replace(Param, "const ", ""))
@@ -191,7 +218,7 @@ If DelimPos Then
     ParamType = Left$(Trimmed, DelimPos - 1)
     ParamName = Mid$(Trimmed, DelimPos + 1)
     Select Case LCase$(ParamName)
-    Case "": ParamName = DefaultName
+    Case "": ParamName = DefaultName 'The param only has it's type
     Case "type": IsReserved = True
     Case "end": IsReserved = True
     Case "string": IsReserved = True
@@ -212,24 +239,25 @@ If InStr(ParamName, "[") Then
     ParamName = Left$(ParamName, InStr(ParamName, "[") - 1)
 End If
 
+'Determine if using IntPtr is needed or just use ByRef
 Select Case GetPointerLevel(ParamType)
 Case 0
     PassType = "ByVal "
     ParamType = DoTypeConv(ParamType)
 Case 1
-    Debug.Assert ParamType <> "GLfloat v"
     Select Case ParamType
     Case "void*"
-        PassType = "ByVal "
-        ParamType = "IntPtr"
+        ParamType = "Object"
     Case "GLvoid*"
-        PassType = "ByVal "
-        ParamType = "IntPtr"
+        ParamType = "Object"
     Case "char*"
-        PassType = "ByVal "
+        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
         ParamType = "String"
     Case "GLchar*"
-        PassType = "ByVal "
+        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+        ParamType = "String"
+    Case "wchar_t*"
+        PassType = "<MarshalAs(UnmanagedType.LPWStr)> ByVal "
         ParamType = "String"
     Case Else
         PassType = "ByRef "
@@ -238,6 +266,13 @@ Case 1
 Case Else
     PassType = "ByRef "
     ParamType = "IntPtr"
+End Select
+
+Select Case ParamType
+Case "Object"
+    PassType = "<MarshalAs(UnmanagedType.AsAny)> ByVal "
+Case "Boolean"
+    PassType = "<MarshalAs(UnmanagedType.Bool)> " & PassType
 End Select
 
 DoParamRename = PassType & ParamName & " As " & ParamType
@@ -299,13 +334,14 @@ For Each GLExtString In Parser.GLExtension.Keys
     Print #FN, vbTab; "' ----------------------------- "; GLExtString; " -----------------------------"
     Print #FN,
     
-    '版本是否存在
+    'A variable tells you if this extension is available
     Print #FN, vbTab; "Public "; GLExtString; " As Boolean = False"
     Print #FN,
     
-    '宏定义
+    'Macro definitions
     For Each MacroName In Ext.MacroDefs.Keys
         HasMacro = True
+        'Make sure no duplicated
         If AlreadyDefinedMacros.Exists(MacroName) = False Then
             AlreadyDefinedMacros.Add MacroName, Ext.MacroDefs(MacroName)
             Print #FN, vbTab; "Public Const "; MacroName; " = "; CHex2VBHex(Ext.MacroDefs(MacroName))
@@ -315,9 +351,11 @@ For Each GLExtString In Parser.GLExtension.Keys
     Next
     If HasMacro Then Print #FN,
     
-    '函数指针类型定义
+    'Function typedefs
     For Each FuncTypeDefName In Ext.FuncTypeDef.Keys
         Print #FN, vbTab; "<System.Security.SuppressUnmanagedCodeSecurity()>"
+        
+        'Function or Sub
         FuncData = Split(Ext.FuncTypeDef(FuncTypeDefName), ":")
         If LCase$(FuncData(0)) = "void" Then
             Tail = ")"
@@ -326,7 +364,11 @@ For Each GLExtString In Parser.GLExtension.Keys
             Tail = ") As " & DoRetTypeConv(FuncData(0))
             Print #FN, vbTab; "Public Delegate Function ";
         End If
+        
+        'Function name
         Print #FN, FuncTypeDefName; " (";
+        
+        'Parameter list
         If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
             Param = Split(FuncData(1), ",")
             For I = 0 To UBound(Param)
@@ -334,21 +376,24 @@ For Each GLExtString In Parser.GLExtension.Keys
                 Print #FN, DoParamRename(Param(I), "param" & I);
             Next
         End If
+        
         Print #FN, Tail
         Print #FN,
     Next
     
-    '函数指针定义
+    'Function pointer declaration
     For Each FuncPtrType In Ext.FuncPtrs.Keys
         HasFuncPtr = True
         Print #FN, vbTab; "Public "; Ext.FuncPtrs(FuncPtrType); " As "; FuncPtrType
     Next
     If HasFuncPtr Then Print #FN,
     
-    'API定义
+    'API declaration
     For Each FuncName In Ext.APIs.Keys
         HasAPI = True
         FuncData = Split(Ext.APIs(FuncName), ":")
+        
+        'Function or Sub
         If LCase$(FuncData(0)) = "void" Then
             Tail = ")"
             Print #FN, vbTab; "Declare Sub ";
@@ -356,7 +401,11 @@ For Each GLExtString In Parser.GLExtension.Keys
             Tail = ") As " & DoRetTypeConv(FuncData(0))
             Print #FN, vbTab; "Declare Function ";
         End If
+        
+        'Function name and Dll name
         Print #FN, FuncName; " Lib """ & Ext.API_DllName & """ (";
+        
+        'Parameter list
         If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
             Param = Split(FuncData(1), ",")
             For I = 0 To UBound(Param)
@@ -364,26 +413,27 @@ For Each GLExtString In Parser.GLExtension.Keys
                 Print #FN, DoParamRename(Param(I), "param" & I);
             Next
         End If
+        
         Print #FN, Tail
     Next
     If HasAPI Then Print #FN,
     
-    '函数指针初始化
+    'Function pointer assignment code generation
     Print #FN, vbTab; "Public Function GLAPI_Init_"; GLExtString; " () As Boolean"
     If HasFuncPtr Then
         Print #FN, vbTab; vbTab; "Dim FuncPtr As IntPtr"
-        Print #FN, vbTab; vbTab; "GLAPI_Init_"; GLExtString; " = True"
         Print #FN,
+        
+        'This is only for Windows. using wglGetProcAddress to retrieve the function pointer, and convert to a Delegate
         For Each FuncPtrType In Ext.FuncPtrs.Keys
             FuncName = Ext.FuncPtrs(FuncPtrType)
             Print #FN, vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """)"
-            Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then GLAPI_Init_"; GLExtString; " = False"
+            Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then Return False"
             Print #FN, vbTab; vbTab; FuncName; " = Marshal.GetDelegateForFunctionPointer(FuncPtr, GetType("; FuncPtrType; "))"
             Print #FN,
         Next
-    Else
-        Print #FN, vbTab; vbTab; "GLAPI_Init_"; GLExtString; " = True"
     End If
+    Print #FN, vbTab; vbTab; "Return True"
     Print #FN, vbTab; "End Function"
     Print #FN,
     
@@ -453,7 +503,7 @@ Print #FN, vbTab; vbTab; "Dim VersionSplit() As String"
 Print #FN, vbTab; vbTab; "Dim Major As Integer, Minor As Integer"
 Print #FN, vbTab; vbTab; "Dim Extensions_Supported("; CStr(ExtCount - 1); ") As Boolean"
 Print #FN,
-Print #FN, vbTab; vbTab; "VersionString = glGetString(GL_VERSION)"
+Print #FN, vbTab; vbTab; "VersionString = Marshal.PtrToStringAnsi(glGetString(GL_VERSION))"
 Print #FN, vbTab; vbTab; "VendorSplit = Split(VersionString)"
 Print #FN, vbTab; vbTab; "VersionSplit = Split(VendorSplit(0), ""."")"
 Print #FN, vbTab; vbTab; "Major = VersionSplit(0)"
@@ -528,7 +578,7 @@ Print #FN, vbTab; vbTab; "If GL_VERSION_3_0 Then"
 Print #FN, vbTab; vbTab; vbTab; "glGetStringi = Marshal.GetDelegateForFunctionPointer(wglGetProcAddress(""glGetStringi""), GetType(PFNGLGETSTRINGIPROC))"
 Print #FN, vbTab; vbTab; vbTab; "glGetIntegerv(GL_NUM_EXTENSIONS, ExtCount)"
 Print #FN, vbTab; vbTab; vbTab; "For I = 0 To ExtCount - 1"
-Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtString = glGetStringi(GL_EXTENSIONS, I)"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtString = Marshal.PtrToStringAnsi(glGetStringi(GL_EXTENSIONS, I))"
 Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtIndex = GLAPI_GetIndexOfExtension(ExtString)"
 Print #FN, vbTab; vbTab; vbTab; vbTab; "If ExtIndex >= 0 Then"
 Print #FN, vbTab; vbTab; vbTab; vbTab; vbTab; "Extensions_Supported(ExtIndex) = True"
@@ -536,7 +586,7 @@ Print #FN, vbTab; vbTab; vbTab; vbTab; "End If"
 Print #FN, vbTab; vbTab; vbTab; "Next"
 Print #FN, vbTab; vbTab; "Else"
 Print #FN, vbTab; vbTab; vbTab; "Dim ExtStrings() As String"
-Print #FN, vbTab; vbTab; vbTab; "ExtStrings = Split(glGetString(GL_EXTENSIONS))"
+Print #FN, vbTab; vbTab; vbTab; "ExtStrings = Split(Marshal.PtrToStringAnsi(glGetString(GL_EXTENSIONS)))"
 Print #FN, vbTab; vbTab; vbTab; "ExtCount = UBound(ExtStrings) + 1"
 Print #FN, vbTab; vbTab; vbTab; "For I = 0 To ExtCount - 1"
 Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtIndex = GLAPI_GetIndexOfExtension(ExtStrings(I))"
@@ -548,7 +598,8 @@ Print #FN, vbTab; vbTab; "End If"
 Print #FN,
 I = 0
 For Each GLExtString In Parser.GLExtension.Keys
-    Print #FN, vbTab; vbTab; GLExtString; " = Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") And GLAPI_Init_"; GLExtString; "()"
+    'Print #FN, vbTab; vbTab; GLExtString; " = Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") And GLAPI_Init_"; GLExtString; "()"
+    Print #FN, vbTab; vbTab; "If Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") Then "; GLExtString; " = GLAPI_Init_"; GLExtString; "() Else "; GLExtString; " = False"
     I = I + 1
 Next
 Print #FN, vbTab; "End Sub"
