@@ -327,12 +327,7 @@ Dim AlreadyDefinedMacros As New Dictionary
 Dim FN As Integer
 FN = FreeFile
 Open ExportTo For Output As #FN
-Print #FN, "Imports System.Collections.Generic"
-Print #FN, "Imports System.Text"
 Print #FN, "Imports System.Runtime.InteropServices"
-Print #FN, "Imports System.Reflection"
-Print #FN, "Imports System.Diagnostics"
-Print #FN, "Imports System.IO"
 Print #FN,
 Print #FN, "Public Module GL_API"
 Print #FN,
