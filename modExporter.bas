@@ -457,7 +457,6 @@ Print #FN, "#Region ""OpenGL Extension Strings"""
 Print #FN,
 Print #FN, vbTab; "Public ReadOnly GLAPI_Extensions() As String ="
 Print #FN, vbTab; "{"
-
 Dim LinePos As Long
 LinePos = 0
 I = 0
@@ -498,7 +497,6 @@ Print #FN, vbTab; vbTab; "Next"
 Print #FN, vbTab; vbTab; "Return -1"
 Print #FN, vbTab; "End Function"
 Print #FN,
-
 Print #FN, "#End Region"
 Print #FN,
 Print #FN, "#Region ""OpenGL Extension Initialize"""
@@ -521,10 +519,6 @@ Print #FN, vbTab; vbTab; "Major = VersionSplit(0)"
 Print #FN, vbTab; vbTab; "Minor = VersionSplit(1)"
 Print #FN, vbTab; vbTab; "If Major = 1 And Minor = 0 Then Return"
 Print #FN,
-'For Each GLExtString In Parser.GLExtension.Keys
-'    Print #FN, vbTab; vbTab; GLExtString; " = False"
-'Next
-'Print #FN,
 Print #FN, vbTab; vbTab; "GL_VERSION_4_6 = (Major > 4) Or ((Major = 4) And (Minor >= 6))"
 Print #FN, vbTab; vbTab; "GL_VERSION_4_5 = GL_VERSION_4_6 Or ((Major = 4) And (Minor >= 5))"
 Print #FN, vbTab; vbTab; "GL_VERSION_4_4 = GL_VERSION_4_5 Or ((Major = 4) And (Minor >= 4))"
@@ -545,26 +539,6 @@ Print #FN, vbTab; vbTab; "GL_VERSION_1_2_1 = GL_VERSION_1_3"
 Print #FN, vbTab; vbTab; "GL_VERSION_1_2 = GL_VERSION_1_2_1 Or ((Major = 1) And (Minor >= 2))"
 Print #FN, vbTab; vbTab; "GL_VERSION_1_1 = GL_VERSION_1_2 Or ((Major = 1) And (Minor >= 1))"
 Print #FN,
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_6 = ((Major > 4) Or ((Major = 4) And (Minor >= 6))) And GLAPI_Init_GL_VERSION_4_6"
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_5 = (GL_VERSION_4_6 Or ((Major = 4) And (Minor >= 5))) And GLAPI_Init_GL_VERSION_4_5"
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_4 = (GL_VERSION_4_5 Or ((Major = 4) And (Minor >= 4))) And GLAPI_Init_GL_VERSION_4_4"
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_3 = (GL_VERSION_4_4 Or ((Major = 4) And (Minor >= 3))) And GLAPI_Init_GL_VERSION_4_3"
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_2 = (GL_VERSION_4_3 Or ((Major = 4) And (Minor >= 2))) And GLAPI_Init_GL_VERSION_4_2"
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_1 = (GL_VERSION_4_2 Or ((Major = 4) And (Minor >= 1))) And GLAPI_Init_GL_VERSION_4_1"
-'Print #FN, vbTab; vbTab; "GL_VERSION_4_0 = (GL_VERSION_4_1 Or ((Major = 4) And (Minor >= 0))) And GLAPI_Init_GL_VERSION_4_0"
-'Print #FN, vbTab; vbTab; "GL_VERSION_3_3 = (GL_VERSION_4_0 Or ((Major = 3) And (Minor >= 3))) And GLAPI_Init_GL_VERSION_3_3"
-'Print #FN, vbTab; vbTab; "GL_VERSION_3_2 = (GL_VERSION_3_3 Or ((Major = 3) And (Minor >= 2))) And GLAPI_Init_GL_VERSION_3_2"
-'Print #FN, vbTab; vbTab; "GL_VERSION_3_1 = (GL_VERSION_3_2 Or ((Major = 3) And (Minor >= 1))) And GLAPI_Init_GL_VERSION_3_1"
-'Print #FN, vbTab; vbTab; "GL_VERSION_3_0 = (GL_VERSION_3_1 Or ((Major = 3) And (Minor >= 0))) And GLAPI_Init_GL_VERSION_3_0"
-'Print #FN, vbTab; vbTab; "GL_VERSION_2_1 = (GL_VERSION_3_0 Or ((Major = 2) And (Minor >= 1))) And GLAPI_Init_GL_VERSION_2_1"
-'Print #FN, vbTab; vbTab; "GL_VERSION_2_0 = (GL_VERSION_2_1 Or ((Major = 2) And (Minor >= 0))) And GLAPI_Init_GL_VERSION_2_0"
-'Print #FN, vbTab; vbTab; "GL_VERSION_1_5 = (GL_VERSION_2_0 Or ((Major = 1) And (Minor >= 5))) And GLAPI_Init_GL_VERSION_1_5"
-'Print #FN, vbTab; vbTab; "GL_VERSION_1_4 = (GL_VERSION_1_5 Or ((Major = 1) And (Minor >= 4))) And GLAPI_Init_GL_VERSION_1_4"
-'Print #FN, vbTab; vbTab; "GL_VERSION_1_3 = (GL_VERSION_1_4 Or ((Major = 1) And (Minor >= 3))) And GLAPI_Init_GL_VERSION_1_3"
-'Print #FN, vbTab; vbTab; "GL_VERSION_1_2_1 = (GL_VERSION_1_3) And GLAPI_Init_GL_VERSION_1_2_1"
-'Print #FN, vbTab; vbTab; "GL_VERSION_1_2 = (GL_VERSION_1_2_1 Or ((Major = 1) And (Minor >= 2))) And GLAPI_Init_GL_VERSION_1_2"
-'Print #FN, vbTab; vbTab; "GL_VERSION_1_1 = (GL_VERSION_1_2 Or ((Major = 1) And (Minor >= 1))) And GLAPI_Init_GL_VERSION_1_1"
-'Print #FN,
 Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_6) = GL_VERSION_4_6"
 Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_5) = GL_VERSION_4_5"
 Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_4) = GL_VERSION_4_4"
@@ -609,7 +583,6 @@ Print #FN, vbTab; vbTab; "End If"
 Print #FN,
 I = 0
 For Each GLExtString In Parser.GLExtension.Keys
-    'Print #FN, vbTab; vbTab; GLExtString; " = Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") And GLAPI_Init_"; GLExtString; "()"
     Print #FN, vbTab; vbTab; "If Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") Then "; GLExtString; " = GLAPI_Init_"; GLExtString; "() Else "; GLExtString; " = False"
     I = I + 1
 Next
@@ -619,7 +592,6 @@ Print #FN, "#End Region"
 Print #FN,
 Print #FN, "#Region ""OpenGL Context Related"""
 Print #FN,
-
 Print #FN, vbTab; "Public Const PFD_TYPE_RGBA = 0"
 Print #FN, vbTab; "Public Const PFD_TYPE_COLORINDEX = 1"
 Print #FN, vbTab; "Public Const PFD_MAIN_PLANE = 0"
@@ -684,12 +656,360 @@ Print #FN, vbTab; "Declare Function wglUseFontBitmaps Lib ""opengl32.dll"" Alias
 Print #FN, vbTab; "Declare Function SwapBuffers Lib ""gdi32.dll"" (ByVal hDC As IntPtr) As Boolean"
 Print #FN, vbTab; "Declare Function wglGetProcAddress Lib ""opengl32.dll"" (ByVal ProcName As String) As IntPtr"
 Print #FN,
-
 Print #FN, "#End Region"
-
 Print #FN, "End Module"
 Print #FN,
 Close #FN
-
-
 End Sub
+
+Sub ExportVB_NET2(Parser As clsParser, ExportTo As String)
+Dim GLExtString
+Dim Ext As clsGLExtension
+Dim MacroName
+Dim FuncTypeDefName
+Dim FuncPtrType
+Dim FuncName
+Dim I As Long, ExtCount As Long
+Dim FuncData() As String
+Dim Param() As String
+Dim Tail As String
+Dim AlreadyDefinedMacros As New Dictionary
+
+Dim FN As Integer
+FN = FreeFile
+Open ExportTo For Output As #FN
+Print #FN, "Imports System.Runtime.InteropServices"
+Print #FN,
+Print #FN, "Class GL_API"
+Print #FN,
+
+Print #FN, "#Region ""OpenGL Extension Declerations"""
+    
+For Each GLExtString In Parser.GLExtension.Keys
+    Dim HasMacro As Boolean, HasAPI As Boolean, HasFuncPtr As Boolean
+    HasMacro = False
+    HasAPI = False
+    HasFuncPtr = False
+    Set Ext = Parser.GLExtension(GLExtString)
+
+    Print #FN, "#Region """; GLExtString; """"
+    Print #FN, vbTab; "' ----------------------------- "; GLExtString; " -----------------------------"
+    Print #FN,
+    
+    'A variable tells you if this extension is available
+    Print #FN, vbTab; "Public "; GLExtString; " As Boolean = False"
+    Print #FN,
+    
+    'Macro definitions
+    For Each MacroName In Ext.MacroDefs.Keys
+        HasMacro = True
+        'Make sure no duplicated
+        If AlreadyDefinedMacros.Exists(MacroName) = False Then
+            AlreadyDefinedMacros.Add MacroName, Ext.MacroDefs(MacroName)
+            Print #FN, vbTab; "Public Const "; MacroName; " = "; CHex2VBHex(Ext.MacroDefs(MacroName))
+        Else
+            Print #FN, vbTab; "'Public Const "; MacroName; " = "; CHex2VBHex(Ext.MacroDefs(MacroName))
+        End If
+    Next
+    If HasMacro Then Print #FN,
+    
+    'Function typedefs
+    For Each FuncTypeDefName In Ext.FuncTypeDef.Keys
+        Print #FN, vbTab; "<System.Security.SuppressUnmanagedCodeSecurity()>"
+        
+        'Function or Sub
+        FuncData = Split(Ext.FuncTypeDef(FuncTypeDefName), ":")
+        If LCase$(FuncData(0)) = "void" Then
+            Tail = ")"
+            Print #FN, vbTab; "Public ReadOnly Delegate Sub ";
+        Else
+            Tail = ") As " & DoRetTypeConv(FuncData(0))
+            Print #FN, vbTab; "Public ReadOnly Delegate Function ";
+        End If
+        
+        'Function name
+        Print #FN, FuncTypeDefName; " (";
+        
+        'Parameter list
+        If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+            Param = Split(FuncData(1), ",")
+            For I = 0 To UBound(Param)
+                If I Then Print #FN, ", ";
+                Print #FN, DoParamRename(Param(I), "param" & I);
+            Next
+        End If
+        
+        Print #FN, Tail
+        Print #FN,
+    Next
+    
+    'Function pointer declaration
+    For Each FuncPtrType In Ext.FuncPtrs.Keys
+        HasFuncPtr = True
+        Print #FN, vbTab; "Public "; Ext.FuncPtrs(FuncPtrType); " As "; FuncPtrType
+    Next
+    If HasFuncPtr Then Print #FN,
+    
+    'API declaration
+    For Each FuncName In Ext.APIs.Keys
+        HasAPI = True
+        FuncData = Split(Ext.APIs(FuncName), ":")
+        
+        'Function or Sub
+        If LCase$(FuncData(0)) = "void" Then
+            Tail = ")"
+            Print #FN, vbTab; "Declare Sub ";
+        Else
+            Tail = ") As " & DoRetTypeConv(FuncData(0))
+            Print #FN, vbTab; "Declare Function ";
+        End If
+        
+        'Function name and Dll name
+        Print #FN, FuncName; " Lib """ & Ext.API_DllName & """ (";
+        
+        'Parameter list
+        If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+            Param = Split(FuncData(1), ",")
+            For I = 0 To UBound(Param)
+                If I Then Print #FN, ", ";
+                Print #FN, DoParamRename(Param(I), "param" & I);
+            Next
+        End If
+        
+        Print #FN, Tail
+    Next
+    If HasAPI Then Print #FN,
+    
+    'Function pointer assignment code generation
+    Print #FN, vbTab; "Private Function GLAPI_Init_"; GLExtString; " () As Boolean"
+    If HasFuncPtr Then
+        Print #FN, vbTab; vbTab; "Dim FuncPtr As IntPtr"
+        Print #FN,
+        
+        'This is only for Windows. using wglGetProcAddress to retrieve the function pointer, and convert to a Delegate
+        For Each FuncPtrType In Ext.FuncPtrs.Keys
+            FuncName = Ext.FuncPtrs(FuncPtrType)
+            Print #FN, vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """)"
+            Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then Return False"
+            Print #FN, vbTab; vbTab; FuncName; " = Marshal.GetDelegateForFunctionPointer(FuncPtr, GetType("; FuncPtrType; "))"
+            Print #FN,
+        Next
+    End If
+    Print #FN, vbTab; vbTab; "Return True"
+    Print #FN, vbTab; "End Function"
+    Print #FN,
+    
+    Print #FN, "#End Region"
+    ExtCount = ExtCount + 1
+Next
+Print #FN, "#End Region"
+Print #FN,
+Print #FN, "#Region ""OpenGL Extension Strings"""
+Print #FN,
+Print #FN, vbTab; "Public ReadOnly GLAPI_Extensions() As String ="
+Print #FN, vbTab; "{"
+Dim LinePos As Long
+LinePos = 0
+I = 0
+Print #FN, vbTab; vbTab;
+For Each GLExtString In Parser.GLExtension.Keys
+    Print #FN, """"; GLExtString;
+    If I < ExtCount - 1 Then
+        Print #FN, """, ";
+    Else
+        Print #FN, """";
+    End If
+    LinePos = LinePos + Len(GLExtString)
+    If LinePos > 80 Then
+        Print #FN,
+        Print #FN, vbTab; vbTab;
+        LinePos = 0
+    End If
+    I = I + 1
+Next
+Print #FN,
+Print #FN, vbTab; "}"
+Print #FN,
+Print #FN, "#End Region"
+Print #FN,
+Print #FN, "#Region ""OpenGL Extension String Indices"""
+Print #FN,
+I = 0
+For Each GLExtString In Parser.GLExtension.Keys
+    Print #FN, vbTab; "Private Const GLAPI_IndexOf_"; GLExtString; " = "; CStr(I)
+    I = I + 1
+Next
+Print #FN,
+Print #FN, vbTab; "Private Function GLAPI_GetIndexOfExtension(ByVal ExtString As String) As Integer"
+Print #FN, vbTab; vbTab; "Dim I As Integer"
+Print #FN, vbTab; vbTab; "For I = 0 To "; CStr(ExtCount - 1)
+Print #FN, vbTab; vbTab; vbTab; "If GLAPI_Extensions(I) = ExtString Then Return I"
+Print #FN, vbTab; vbTab; "Next"
+Print #FN, vbTab; vbTab; "Return -1"
+Print #FN, vbTab; "End Function"
+Print #FN,
+Print #FN, "#End Region"
+Print #FN,
+Print #FN, "#Region ""OpenGL Extension Initialize"""
+Print #FN,
+Print #FN, vbTab; "Sub New()"
+Print #FN, vbTab; vbTab; "Dim I As Integer"
+Print #FN, vbTab; vbTab; "Dim ExtIndex As Integer"
+Print #FN, vbTab; vbTab; "Dim ExtCount As Integer"
+Print #FN, vbTab; vbTab; "Dim ExtString As String"
+Print #FN, vbTab; vbTab; "Dim VersionString As String"
+Print #FN, vbTab; vbTab; "Dim VendorSplit() As String"
+Print #FN, vbTab; vbTab; "Dim VersionSplit() As String"
+Print #FN, vbTab; vbTab; "Dim Major As Integer, Minor As Integer"
+Print #FN, vbTab; vbTab; "Dim Extensions_Supported("; CStr(ExtCount - 1); ") As Boolean"
+Print #FN,
+Print #FN, vbTab; vbTab; "VersionString = Marshal.PtrToStringAnsi(glGetString(GL_VERSION))"
+Print #FN, vbTab; vbTab; "VendorSplit = Split(VersionString)"
+Print #FN, vbTab; vbTab; "VersionSplit = Split(VendorSplit(0), ""."")"
+Print #FN, vbTab; vbTab; "Major = VersionSplit(0)"
+Print #FN, vbTab; vbTab; "Minor = VersionSplit(1)"
+Print #FN, vbTab; vbTab; "If Major = 1 And Minor = 0 Then Return"
+Print #FN,
+Print #FN, vbTab; vbTab; "GL_VERSION_4_6 = (Major > 4) Or ((Major = 4) And (Minor >= 6))"
+Print #FN, vbTab; vbTab; "GL_VERSION_4_5 = GL_VERSION_4_6 Or ((Major = 4) And (Minor >= 5))"
+Print #FN, vbTab; vbTab; "GL_VERSION_4_4 = GL_VERSION_4_5 Or ((Major = 4) And (Minor >= 4))"
+Print #FN, vbTab; vbTab; "GL_VERSION_4_3 = GL_VERSION_4_4 Or ((Major = 4) And (Minor >= 3))"
+Print #FN, vbTab; vbTab; "GL_VERSION_4_2 = GL_VERSION_4_3 Or ((Major = 4) And (Minor >= 2))"
+Print #FN, vbTab; vbTab; "GL_VERSION_4_1 = GL_VERSION_4_2 Or ((Major = 4) And (Minor >= 1))"
+Print #FN, vbTab; vbTab; "GL_VERSION_4_0 = GL_VERSION_4_1 Or ((Major = 4) And (Minor >= 0))"
+Print #FN, vbTab; vbTab; "GL_VERSION_3_3 = GL_VERSION_4_0 Or ((Major = 3) And (Minor >= 3))"
+Print #FN, vbTab; vbTab; "GL_VERSION_3_2 = GL_VERSION_3_3 Or ((Major = 3) And (Minor >= 2))"
+Print #FN, vbTab; vbTab; "GL_VERSION_3_1 = GL_VERSION_3_2 Or ((Major = 3) And (Minor >= 1))"
+Print #FN, vbTab; vbTab; "GL_VERSION_3_0 = GL_VERSION_3_1 Or ((Major = 3) And (Minor >= 0))"
+Print #FN, vbTab; vbTab; "GL_VERSION_2_1 = GL_VERSION_3_0 Or ((Major = 2) And (Minor >= 1))"
+Print #FN, vbTab; vbTab; "GL_VERSION_2_0 = GL_VERSION_2_1 Or ((Major = 2) And (Minor >= 0))"
+Print #FN, vbTab; vbTab; "GL_VERSION_1_5 = GL_VERSION_2_0 Or ((Major = 1) And (Minor >= 5))"
+Print #FN, vbTab; vbTab; "GL_VERSION_1_4 = GL_VERSION_1_5 Or ((Major = 1) And (Minor >= 4))"
+Print #FN, vbTab; vbTab; "GL_VERSION_1_3 = GL_VERSION_1_4 Or ((Major = 1) And (Minor >= 3))"
+Print #FN, vbTab; vbTab; "GL_VERSION_1_2_1 = GL_VERSION_1_3"
+Print #FN, vbTab; vbTab; "GL_VERSION_1_2 = GL_VERSION_1_2_1 Or ((Major = 1) And (Minor >= 2))"
+Print #FN, vbTab; vbTab; "GL_VERSION_1_1 = GL_VERSION_1_2 Or ((Major = 1) And (Minor >= 1))"
+Print #FN,
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_6) = GL_VERSION_4_6"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_5) = GL_VERSION_4_5"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_4) = GL_VERSION_4_4"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_3) = GL_VERSION_4_3"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_2) = GL_VERSION_4_2"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_1) = GL_VERSION_4_1"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_4_0) = GL_VERSION_4_0"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_3_3) = GL_VERSION_3_3"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_3_2) = GL_VERSION_3_2"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_3_1) = GL_VERSION_3_1"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_3_0) = GL_VERSION_3_0"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_2_1) = GL_VERSION_2_1"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_2_0) = GL_VERSION_2_0"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_1_5) = GL_VERSION_1_5"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_1_4) = GL_VERSION_1_4"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_1_3) = GL_VERSION_1_3"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_1_2_1) = GL_VERSION_1_2_1"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_1_2) = GL_VERSION_1_2"
+Print #FN, vbTab; vbTab; "Extensions_Supported(GLAPI_IndexOf_GL_VERSION_1_1) = GL_VERSION_1_1"
+Print #FN,
+Print #FN, vbTab; vbTab; "If GL_VERSION_3_0 Then"
+Print #FN, vbTab; vbTab; vbTab; "glGetStringi = Marshal.GetDelegateForFunctionPointer(wglGetProcAddress(""glGetStringi""), GetType(PFNGLGETSTRINGIPROC))"
+Print #FN, vbTab; vbTab; vbTab; "glGetIntegerv(GL_NUM_EXTENSIONS, ExtCount)"
+Print #FN, vbTab; vbTab; vbTab; "For I = 0 To ExtCount - 1"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtString = Marshal.PtrToStringAnsi(glGetStringi(GL_EXTENSIONS, I))"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtIndex = GLAPI_GetIndexOfExtension(ExtString)"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "If ExtIndex >= 0 Then"
+Print #FN, vbTab; vbTab; vbTab; vbTab; vbTab; "Extensions_Supported(ExtIndex) = True"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "End If"
+Print #FN, vbTab; vbTab; vbTab; "Next"
+Print #FN, vbTab; vbTab; "Else"
+Print #FN, vbTab; vbTab; vbTab; "Dim ExtStrings() As String"
+Print #FN, vbTab; vbTab; vbTab; "ExtStrings = Split(Marshal.PtrToStringAnsi(glGetString(GL_EXTENSIONS)))"
+Print #FN, vbTab; vbTab; vbTab; "ExtCount = UBound(ExtStrings) + 1"
+Print #FN, vbTab; vbTab; vbTab; "For I = 0 To ExtCount - 1"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "ExtIndex = GLAPI_GetIndexOfExtension(ExtStrings(I))"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "If ExtIndex >= 0 Then"
+Print #FN, vbTab; vbTab; vbTab; vbTab; vbTab; "Extensions_Supported(ExtIndex) = True"
+Print #FN, vbTab; vbTab; vbTab; vbTab; "End If"
+Print #FN, vbTab; vbTab; vbTab; "Next"
+Print #FN, vbTab; vbTab; "End If"
+Print #FN,
+I = 0
+For Each GLExtString In Parser.GLExtension.Keys
+    Print #FN, vbTab; vbTab; "If Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") Then "; GLExtString; " = GLAPI_Init_"; GLExtString; "() Else "; GLExtString; " = False"
+    I = I + 1
+Next
+Print #FN, vbTab; "End Sub"
+Print #FN,
+Print #FN, "#End Region"
+Print #FN,
+Print #FN, "#Region ""OpenGL Context Related"""
+Print #FN,
+Print #FN, vbTab; "Public Const PFD_TYPE_RGBA = 0"
+Print #FN, vbTab; "Public Const PFD_TYPE_COLORINDEX = 1"
+Print #FN, vbTab; "Public Const PFD_MAIN_PLANE = 0"
+Print #FN, vbTab; "Public Const PFD_OVERLAY_PLANE = 1"
+Print #FN, vbTab; "Public Const PFD_UNDERLAY_PLANE = (-1)"
+Print #FN, vbTab; "Public Const PFD_DOUBLEBUFFER As Integer = &H1"
+Print #FN, vbTab; "Public Const PFD_STEREO As Integer = &H2"
+Print #FN, vbTab; "Public Const PFD_DRAW_TO_WINDOW As Integer = &H4"
+Print #FN, vbTab; "Public Const PFD_DRAW_TO_BITMAP As Integer = &H8"
+Print #FN, vbTab; "Public Const PFD_SUPPORT_GDI As Integer = &H10"
+Print #FN, vbTab; "Public Const PFD_SUPPORT_OPENGL As Integer = &H20"
+Print #FN, vbTab; "Public Const PFD_GENERIC_FORMAT As Integer = &H40"
+Print #FN, vbTab; "Public Const PFD_NEED_PALETTE As Integer = &H80"
+Print #FN, vbTab; "Public Const PFD_NEED_SYSTEM_PALETTE As Integer = &H100"
+Print #FN, vbTab; "Public Const PFD_SWAP_EXCHANGE As Integer = &H200"
+Print #FN, vbTab; "Public Const PFD_SWAP_COPY As Integer = &H400"
+Print #FN, vbTab; "Public Const PFD_SWAP_LAYER_BUFFERS As Integer = &H800"
+Print #FN, vbTab; "Public Const PFD_GENERIC_ACCELERATED As Integer = &H1000"
+Print #FN, vbTab; "Public Const PFD_SUPPORT_DIRECTDRAW As Integer = &H2000"
+Print #FN, vbTab; "Public Const PFD_DEPTH_DONTCARE As Integer = &H20000000"
+Print #FN, vbTab; "Public Const PFD_DOUBLEBUFFER_DONTCARE As Integer = &H40000000"
+Print #FN, vbTab; "Public Const PFD_STEREO_DONTCARE As Integer = &H80000000"
+Print #FN,
+Print #FN, vbTab; "Public Structure PIXELFORMATDESCRIPTOR"
+Print #FN, vbTab; vbTab; "Public nSize As UInt16"
+Print #FN, vbTab; vbTab; "Public nVersion As UInt16"
+Print #FN, vbTab; vbTab; "Public dwFlags As UInt32"
+Print #FN, vbTab; vbTab; "Public iPixelType As Byte"
+Print #FN, vbTab; vbTab; "Public cColorBits As Byte"
+Print #FN, vbTab; vbTab; "Public cRedBits As Byte"
+Print #FN, vbTab; vbTab; "Public cRedShift As Byte"
+Print #FN, vbTab; vbTab; "Public cGreenBits As Byte"
+Print #FN, vbTab; vbTab; "Public cGreenShift As Byte"
+Print #FN, vbTab; vbTab; "Public cBlueBits As Byte"
+Print #FN, vbTab; vbTab; "Public cBlueShift As Byte"
+Print #FN, vbTab; vbTab; "Public cAlphaBits As Byte"
+Print #FN, vbTab; vbTab; "Public cAlphaShift As Byte"
+Print #FN, vbTab; vbTab; "Public cAccumBits As Byte"
+Print #FN, vbTab; vbTab; "Public cAccumRedBits As Byte"
+Print #FN, vbTab; vbTab; "Public cAccumGreenBits As Byte"
+Print #FN, vbTab; vbTab; "Public cAccumBlueBits As Byte"
+Print #FN, vbTab; vbTab; "Public cAccumAlphaBits As Byte"
+Print #FN, vbTab; vbTab; "Public cDepthBits As Byte"
+Print #FN, vbTab; vbTab; "Public cStencilBits As Byte"
+Print #FN, vbTab; vbTab; "Public cAuxBuffers As Byte"
+Print #FN, vbTab; vbTab; "Public iLayerType As Byte"
+Print #FN, vbTab; vbTab; "Public bReserved As Byte"
+Print #FN, vbTab; vbTab; "Public dwLayerMask As UInt32"
+Print #FN, vbTab; vbTab; "Public dwVisibleMask As UInt32"
+Print #FN, vbTab; vbTab; "Public dwDamageMask As UInt32"
+Print #FN, vbTab; "End Structure"
+Print #FN,
+Print #FN, vbTab; "Public Declare Function ChoosePixelFormat Lib ""gdi32.dll"" (ByVal hDC As IntPtr, ByRef pfd As PIXELFORMATDESCRIPTOR) As Int32"
+Print #FN, vbTab; "Public Declare Function SetPixelFormat Lib ""gdi32.dll"" (ByVal hDC As IntPtr, ByVal pm As Int32, ByRef pfd As PIXELFORMATDESCRIPTOR) As Boolean"
+Print #FN, vbTab; "Public Declare Function wglCreateContext Lib ""opengl32.dll"" (ByVal hDC As IntPtr) As IntPtr"
+Print #FN, vbTab; "Public Declare Function wglMakeCurrent Lib ""opengl32.dll"" (ByVal hDC As IntPtr, ByVal hGLRC As IntPtr) As Boolean"
+Print #FN, vbTab; "Public Declare Function wglDeleteContext Lib ""opengl32.dll"" (ByVal hGLRC As IntPtr) As Boolean"
+Print #FN, vbTab; "Public Declare Function wglSwapBuffers Lib ""opengl32.dll"" (ByVal hDC As IntPtr) As Boolean"
+Print #FN, vbTab; "Public Declare Function GetDC Lib ""user32.dll"" (ByVal hWnd As IntPtr) As IntPtr"
+Print #FN, vbTab; "Public Declare Function ReleaseDC Lib ""user32.dll"" (ByVal hWnd As IntPtr, ByVal hDC As IntPtr) As Boolean"
+Print #FN, vbTab; "Public Declare Function wglUseFontBitmaps Lib ""opengl32.dll"" Alias ""wglUseFontBitmapsA"" (ByVal hDC As IntPtr, ByVal first As UInt32, ByVal count As UInt32, ByVal listBase As UInt32) As Boolean"
+Print #FN, vbTab; "Public Declare Function SwapBuffers Lib ""gdi32.dll"" (ByVal hDC As IntPtr) As Boolean"
+Print #FN, vbTab; "Public Declare Function wglGetProcAddress Lib ""opengl32.dll"" (ByVal ProcName As String) As IntPtr"
+Print #FN,
+Print #FN, "#End Region"
+Print #FN, "End Class"
+Print #FN,
+Close #FN
+End Sub
+

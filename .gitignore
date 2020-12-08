@@ -1,3 +1,4 @@
 *.exe
 GL_API.vb
+clsGL_API.vb
 *.vbw

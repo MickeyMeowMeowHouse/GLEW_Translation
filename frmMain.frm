@@ -94,6 +94,7 @@ HeaderParse.ParseHeaderFile App.Path & "\wglew.h", "wglew"
 
 'Export the parsed C code to VB.NET
 ExportVB_NET HeaderParse, App.Path & "\GL_API.vb"
+ExportVB_NET2 HeaderParse, App.Path & "\clsGL_API.vb"
 
 'Show in the TreeView
 Dim ExtensionString
