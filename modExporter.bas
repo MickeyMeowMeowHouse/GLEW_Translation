@@ -73,7 +73,7 @@ Case "GLdouble"
 Case "GLclampd"
     DoTypeConv = "Double"
 Case "GLvoid"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "GLint64EXT"
     DoTypeConv = "Int64"
 Case "GLuint64EXT"
@@ -113,17 +113,17 @@ Case "GLvdpauSurfaceNV"
 Case "GLclampx"
     DoTypeConv = "Int32"
 Case "HPBUFFERARB"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "HPBUFFEREXT"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "HGPUNV"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "HVIDEOOUTPUTDEVICENV"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "HVIDEOINPUTDEVICENV"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "HPVIDEODEV"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "FLOAT"
     DoTypeConv = "Single"
 Case "float"
@@ -151,7 +151,7 @@ Case "HGLRC"
 Case "HANDLE"
     DoTypeConv = "IntPtr"
 Case "LPVOID"
-    DoTypeConv = "Object"
+    DoTypeConv = "IntPtr"
 Case "PGPU_DEVICE"
     DoTypeConv = "IntPtr"
 Case "GLUquadric"
@@ -248,9 +248,9 @@ Case 0
 Case 1
     Select Case ParamType
     Case "void*"
-        ParamType = "Object"
+        ParamType = "IntPtr"
     Case "GLvoid*"
-        ParamType = "Object"
+        ParamType = "IntPtr"
     Case "char*"
         PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
         ParamType = "String"
@@ -697,7 +697,7 @@ For Each GLExtString In Parser.GLExtension.Keys
     Print #FN,
     
     'A variable tells you if this extension is available
-    Print #FN, vbTab; "Public "; GLExtString; " As Boolean = False"
+    Print #FN, vbTab; "Public ReadOnly "; GLExtString; " As Boolean = False"
     Print #FN,
     
     'Macro definitions
@@ -721,10 +721,10 @@ For Each GLExtString In Parser.GLExtension.Keys
         FuncData = Split(Ext.FuncTypeDef(FuncTypeDefName), ":")
         If LCase$(FuncData(0)) = "void" Then
             Tail = ")"
-            Print #FN, vbTab; "Public ReadOnly Delegate Sub ";
+            Print #FN, vbTab; "Public Delegate Sub ";
         Else
             Tail = ") As " & DoRetTypeConv(FuncData(0))
-            Print #FN, vbTab; "Public ReadOnly Delegate Function ";
+            Print #FN, vbTab; "Public Delegate Function ";
         End If
         
         'Function name
@@ -746,7 +746,7 @@ For Each GLExtString In Parser.GLExtension.Keys
     'Function pointer declaration
     For Each FuncPtrType In Ext.FuncPtrs.Keys
         HasFuncPtr = True
-        Print #FN, vbTab; "Public "; Ext.FuncPtrs(FuncPtrType); " As "; FuncPtrType
+        Print #FN, vbTab; "Public ReadOnly "; Ext.FuncPtrs(FuncPtrType); " As "; FuncPtrType
     Next
     If HasFuncPtr Then Print #FN,
     
@@ -781,23 +781,24 @@ For Each GLExtString In Parser.GLExtension.Keys
     If HasAPI Then Print #FN,
     
     'Function pointer assignment code generation
-    Print #FN, vbTab; "Private Function GLAPI_Init_"; GLExtString; " () As Boolean"
-    If HasFuncPtr Then
-        Print #FN, vbTab; vbTab; "Dim FuncPtr As IntPtr"
-        Print #FN,
-        
-        'This is only for Windows. using wglGetProcAddress to retrieve the function pointer, and convert to a Delegate
-        For Each FuncPtrType In Ext.FuncPtrs.Keys
-            FuncName = Ext.FuncPtrs(FuncPtrType)
-            Print #FN, vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """)"
-            Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then Return False"
-            Print #FN, vbTab; vbTab; FuncName; " = Marshal.GetDelegateForFunctionPointer(FuncPtr, GetType("; FuncPtrType; "))"
-            Print #FN,
-        Next
-    End If
-    Print #FN, vbTab; vbTab; "Return True"
-    Print #FN, vbTab; "End Function"
-    Print #FN,
+    'Not good for a class. We move all the code into Sub New
+'    Print #FN, vbTab; "Private Function GLAPI_Init_"; GLExtString; " () As Boolean"
+'    If HasFuncPtr Then
+'        Print #FN, vbTab; vbTab; "Dim FuncPtr As IntPtr"
+'        Print #FN,
+'
+'        'This is only for Windows. using wglGetProcAddress to retrieve the function pointer, and convert to a Delegate
+'        For Each FuncPtrType In Ext.FuncPtrs.Keys
+'            FuncName = Ext.FuncPtrs(FuncPtrType)
+'            Print #FN, vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """)"
+'            Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then Return False"
+'            Print #FN, vbTab; vbTab; FuncName; " = Marshal.GetDelegateForFunctionPointer(FuncPtr, GetType("; FuncPtrType; "))"
+'            Print #FN,
+'        Next
+'    End If
+'    Print #FN, vbTab; vbTab; "Return True"
+'    Print #FN, vbTab; "End Function"
+'    Print #FN,
     
     Print #FN, "#End Region"
     ExtCount = ExtCount + 1
@@ -933,8 +934,30 @@ Print #FN, vbTab; vbTab; vbTab; "Next"
 Print #FN, vbTab; vbTab; "End If"
 Print #FN,
 I = 0
+Print #FN, vbTab; "Dim FuncPtr As IntPtr"
 For Each GLExtString In Parser.GLExtension.Keys
-    Print #FN, vbTab; vbTab; "If Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") Then "; GLExtString; " = GLAPI_Init_"; GLExtString; "() Else "; GLExtString; " = False"
+    Set Ext = Parser.GLExtension(GLExtString)
+
+    Print #FN, "#Region """; GLExtString; "_Initialize"""
+    Print #FN, vbTab; "' ----------------------------- "; GLExtString; " -----------------------------"
+    Print #FN,
+    
+    'Function pointer assignment code generation
+    Print #FN, vbTab; GLExtString; " = False"
+    Print #FN, vbTab; "If Extensions_Supported(GLAPI_IndexOf_"; GLExtString; ") Then"
+    For Each FuncPtrType In Ext.FuncPtrs.Keys
+        FuncName = Ext.FuncPtrs(FuncPtrType)
+        Print #FN, vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """)"
+        Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then Goto EndOf_"; GLExtString
+        Print #FN, vbTab; vbTab; FuncName; " = Marshal.GetDelegateForFunctionPointer(FuncPtr, GetType("; FuncPtrType; "))"
+        Print #FN,
+    Next
+    Print #FN, vbTab; vbTab; GLExtString; " = True"
+    Print #FN, vbTab; "End If"
+    Print #FN, vbTab; "EndOf_"; GLExtString; ":"
+    Print #FN,
+    
+    Print #FN, "#End Region"
     I = I + 1
 Next
 Print #FN, vbTab; "End Sub"
@@ -998,6 +1021,8 @@ Print #FN,
 Print #FN, vbTab; "Public Declare Function ChoosePixelFormat Lib ""gdi32.dll"" (ByVal hDC As IntPtr, ByRef pfd As PIXELFORMATDESCRIPTOR) As Int32"
 Print #FN, vbTab; "Public Declare Function SetPixelFormat Lib ""gdi32.dll"" (ByVal hDC As IntPtr, ByVal pm As Int32, ByRef pfd As PIXELFORMATDESCRIPTOR) As Boolean"
 Print #FN, vbTab; "Public Declare Function wglCreateContext Lib ""opengl32.dll"" (ByVal hDC As IntPtr) As IntPtr"
+Print #FN, vbTab; "Public Declare Function wglGetCurrentDC Lib ""opengl32.dll"" () As IntPtr"
+Print #FN, vbTab; "Public Declare Function wglGetCurrentContext Lib ""opengl32.dll"" () As IntPtr"
 Print #FN, vbTab; "Public Declare Function wglMakeCurrent Lib ""opengl32.dll"" (ByVal hDC As IntPtr, ByVal hGLRC As IntPtr) As Boolean"
 Print #FN, vbTab; "Public Declare Function wglDeleteContext Lib ""opengl32.dll"" (ByVal hGLRC As IntPtr) As Boolean"
 Print #FN, vbTab; "Public Declare Function wglSwapBuffers Lib ""opengl32.dll"" (ByVal hDC As IntPtr) As Boolean"
