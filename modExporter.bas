@@ -206,6 +206,9 @@ End Function
 'Rename the parameters if necessary
 Function DoParamRename(Param As String, Optional DefaultName As String = "param") As String
 Dim Trimmed As String
+Dim HaveConst As Boolean
+If InStr(Param, "const ") Then HaveConst = True
+If InStr(Param, "const*") Then HaveConst = True
 Trimmed = Trim$(Replace(Param, "const ", ""))
 Trimmed = Trim$(Replace(Trimmed, "const*", "*"))
 Trimmed = Replace(Trimmed, "*", "* ")
@@ -248,36 +251,78 @@ Case 0
 Case 1
     Select Case ParamType
     Case "void*"
+        PassType = "ByVal "
         ParamType = "IntPtr"
     Case "GLvoid*"
+        PassType = "ByVal "
         ParamType = "IntPtr"
     Case "char*"
-        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
-        ParamType = "String"
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+            ParamType = "String"
+        Else
+            PassType = "<MarshalAs(UnmanagedType.LPStr)> ByRef "
+            ParamType = "String"
+        End If
     Case "GLchar*"
-        PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
-        ParamType = "String"
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPStr)> ByVal "
+            ParamType = "String"
+        Else
+            PassType = "<MarshalAs(UnmanagedType.LPStr)> ByRef "
+            ParamType = "String"
+        End If
     Case "wchar_t*"
-        PassType = "<MarshalAs(UnmanagedType.LPWStr)> ByVal "
-        ParamType = "String"
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPWStr)> ByVal "
+            ParamType = "String"
+        Else
+            PassType = "<MarshalAs(UnmanagedType.LPWStr)> ByRef "
+            ParamType = "String"
+        End If
     Case Else
-        PassType = "ByRef "
-        ParamType = DoTypeConv(Replace(ParamType, "*", ""))
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
+            ParamType = DoTypeConv(Replace(ParamType, "*", "")) & "()"
+        Else
+            PassType = "ByRef "
+            ParamType = DoTypeConv(Replace(ParamType, "*", ""))
+        End If
     End Select
 Case 2
     Select Case ParamType
     Case "char**"
-        PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
-        ParamType = "String()"
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
+            ParamType = "String()"
+        Else
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByRef "
+            ParamType = "String()"
+        End If
     Case "GLchar**"
-        PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
-        ParamType = "String()"
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
+            ParamType = "String()"
+        Else
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByRef "
+            ParamType = "String()"
+        End If
     Case "wchar_t**"
-        PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
-        ParamType = "IntPtr()"
+        If HaveConst Then
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByVal "
+            ParamType = "IntPtr()"
+        Else
+            PassType = "<MarshalAs(UnmanagedType.LPArray)> ByRef "
+            ParamType = "IntPtr()"
+        End If
     Case Else
-        PassType = "ByRef "
-        ParamType = "IntPtr"
+        If HaveConst Then
+            PassType = "ByVal "
+            ParamType = "IntPtr"
+        Else
+            PassType = "ByRef "
+            ParamType = "IntPtr"
+        End If
     End Select
 Case Else
     PassType = "ByRef "
