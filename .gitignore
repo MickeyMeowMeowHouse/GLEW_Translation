@@ -1,5 +1,6 @@
 *.exe
 GL_API.vb
+GLAPI.cs
 clsGL_API.vb
 modGL_API.vb
 *.vbw
