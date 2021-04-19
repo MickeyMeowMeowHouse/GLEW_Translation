@@ -1149,26 +1149,6 @@ For Each GLExtString In Parser.GLExtension.Keys
     Next
     If HasAPI Then Print #FN,
     
-    'Function pointer assignment code generation
-    'Not good for a class. We move all the code into Sub New
-'    Print #FN, vbTab; "Private Function GLAPI_Init_"; GLExtString; " () As Boolean"
-'    If HasFuncPtr Then
-'        Print #FN, vbTab; vbTab; "Dim FuncPtr As IntPtr"
-'        Print #FN,
-'
-'        'This is only for Windows. using wglGetProcAddress to retrieve the function pointer, and convert to a Delegate
-'        For Each FuncPtrType In Ext.FuncPtrs.Keys
-'            FuncName = Ext.FuncPtrs(FuncPtrType)
-'            Print #FN, vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """)"
-'            Print #FN, vbTab; vbTab; "If FuncPtr = 0 Then Return False"
-'            Print #FN, vbTab; vbTab; FuncName; " = Marshal.GetDelegateForFunctionPointer(FuncPtr, GetType("; FuncPtrType; "))"
-'            Print #FN,
-'        Next
-'    End If
-'    Print #FN, vbTab; vbTab; "Return True"
-'    Print #FN, vbTab; "End Function"
-'    Print #FN,
-    
     Print #FN, "#End Region"
     ExtCount = ExtCount + 1
 Next
@@ -1501,7 +1481,7 @@ For Each GLExtString In Parser.GLExtension.Keys
     'API declaration
     For Each FuncName In Ext.APIs.Keys
         HasAPI = True
-        Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport("""; Ext.API_DllName; """)]"
+        Print #FN, vbTab; "[DllImport("""; Ext.API_DllName; """)]"
         FuncData = Split(Ext.APIs(FuncName), ":")
         
         'Function or Sub
