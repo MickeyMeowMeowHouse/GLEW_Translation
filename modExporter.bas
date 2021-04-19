@@ -197,6 +197,10 @@ End Function
 'Do type conversions
 Function DoTypeConvCSharp(TypeDesc As String) As String
 Select Case TypeDesc
+Case "void"
+    DoTypeConvCSharp = "void"
+Case "VOID"
+    DoTypeConvCSharp = "void"
 Case "GLenum"
     DoTypeConvCSharp = "uint"
 Case "GLbitfield"
@@ -210,7 +214,7 @@ Case "GLsizei"
 Case "GLboolean"
     DoTypeConvCSharp = "bool"
 Case "GLbyte"
-    DoTypeConvCSharp = "char"
+    DoTypeConvCSharp = "sbyte"
 Case "GLshort"
     DoTypeConvCSharp = "short"
 Case "GLubyte"
@@ -254,7 +258,7 @@ Case "cl_event"
 Case "GLcharARB"
     DoTypeConvCSharp = "byte"
 Case "GLhandleARB"
-    DoTypeConvCSharp = "int"
+    DoTypeConvCSharp = "uint"
 Case "GLintptrARB"
     DoTypeConvCSharp = "IntPtr"
 Case "GLsizeiptrARB"
@@ -347,6 +351,138 @@ If InStr(Trimmed, "*") Then
 Else
     DoRetTypeConvCSharp = DoTypeConvCSharp(Trimmed)
 End If
+End Function
+
+
+'Do type conversions
+Function DoTypeConvCSharpUnsafe(TypeDesc As String) As String
+Select Case TypeDesc
+Case "void"
+    DoTypeConvCSharpUnsafe = "void"
+Case "VOID"
+    DoTypeConvCSharpUnsafe = "void"
+Case "GLenum"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "GLbitfield"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "GLuint"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "GLint"
+    DoTypeConvCSharpUnsafe = "int"
+Case "GLsizei"
+    DoTypeConvCSharpUnsafe = "int"
+Case "GLboolean"
+    DoTypeConvCSharpUnsafe = "bool"
+Case "GLbyte"
+    DoTypeConvCSharpUnsafe = "sbyte"
+Case "GLshort"
+    DoTypeConvCSharpUnsafe = "short"
+Case "GLubyte"
+    DoTypeConvCSharpUnsafe = "byte"
+Case "GLushort"
+    DoTypeConvCSharpUnsafe = "ushort"
+Case "GLulong"
+    DoTypeConvCSharpUnsafe = "UIntPtr"
+Case "GLfloat"
+    DoTypeConvCSharpUnsafe = "float"
+Case "GLclampf"
+    DoTypeConvCSharpUnsafe = "float"
+Case "GLdouble"
+    DoTypeConvCSharpUnsafe = "double"
+Case "GLclampd"
+    DoTypeConvCSharpUnsafe = "double"
+Case "GLvoid"
+    DoTypeConvCSharpUnsafe = "void"
+Case "GLint64EXT"
+    DoTypeConvCSharpUnsafe = "long"
+Case "GLuint64EXT"
+    DoTypeConvCSharpUnsafe = "ulong"
+Case "GLint64"
+    DoTypeConvCSharpUnsafe = "long"
+Case "GLuint64"
+    DoTypeConvCSharpUnsafe = "ulong"
+Case "GLsync"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "GLchar"
+    DoTypeConvCSharpUnsafe = "byte"
+Case "GLintptr"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "GLsizeiptr"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "GLfixed"
+    DoTypeConvCSharpUnsafe = "int"
+Case "cl_context"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "cl_event"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "GLcharARB"
+    DoTypeConvCSharpUnsafe = "byte"
+Case "GLhandleARB"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "GLintptrARB"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "GLsizeiptrARB"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "GLeglClientBufferEXT"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "GLhalf"
+    DoTypeConvCSharpUnsafe = "ushort"
+Case "GLvdpauSurfaceNV"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "GLclampx"
+    DoTypeConvCSharpUnsafe = "int"
+Case "HPBUFFERARB"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HPBUFFEREXT"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HGPUNV"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HVIDEOOUTPUTDEVICENV"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HVIDEOINPUTDEVICENV"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HPVIDEODEV"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "FLOAT"
+    DoTypeConvCSharpUnsafe = "float"
+Case "float"
+    DoTypeConvCSharpUnsafe = "float"
+Case "UINT"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "int"
+    DoTypeConvCSharpUnsafe = "int"
+Case "INT"
+    DoTypeConvCSharpUnsafe = "int"
+Case "unsigned int"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "unsigned long"
+    DoTypeConvCSharpUnsafe = "UIntPtr"
+Case "BOOL"
+    DoTypeConvCSharpUnsafe = "bool"
+Case "USHORT"
+    DoTypeConvCSharpUnsafe = "ushort"
+Case "DWORD"
+    DoTypeConvCSharpUnsafe = "uint"
+Case "HDC"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HGLRC"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "HANDLE"
+    DoTypeConvCSharpUnsafe = "IntPtr"
+Case "LPVOID"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "PGPU_DEVICE"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "GLUquadric"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "GLUtesselator"
+    DoTypeConvCSharpUnsafe = "void*"
+Case "GLUnurbs"
+    DoTypeConvCSharpUnsafe = "void*"
+Case Else
+    DoTypeConvCSharpUnsafe = TypeDesc
+    Debug.Print TypeDesc
+End Select
 End Function
 
 Function GetPointerLevel(TypeDesc As String) As Long
@@ -495,7 +631,7 @@ DoParamRenameVB_NET = PassType & ParamName & " As " & ParamType
 End Function
 
 'Rename the parameters if necessary
-Function DoParamRenameCSharp(Param As String, Optional DefaultName As String = "param") As String
+Function DoParamRenameCSharp(Param As String, Optional DefaultName As String = "param", Optional OutCallingParam As String = "", Optional ByVal NoMarshal As Boolean = False) As String
 Dim Trimmed As String
 Dim HaveConst As Boolean
 If InStr(Param, "const ") Then HaveConst = True
@@ -506,7 +642,124 @@ Trimmed = Replace(Trimmed, "*", "* ")
 Trimmed = Replace(Trimmed, "  ", " ")
 Trimmed = Replace(Trimmed, " *", "*")
 
-Dim PassType As String, ParamType As String, ParamName As String
+Dim MarshalType As String, PassType As String, ParamType As String, ParamName As String
+Dim DelimPos As Long, IsReserved As Boolean
+DelimPos = InStrRev(Trimmed, " ")
+If DelimPos Then
+    ParamType = Left$(Trimmed, DelimPos - 1)
+    ParamName = Mid$(Trimmed, DelimPos + 1)
+    Select Case LCase$(ParamName)
+    Case "": ParamName = DefaultName 'The param only has it's type
+    Case "type": IsReserved = True
+    Case "end": IsReserved = True
+    Case "string": IsReserved = True
+    Case "object": IsReserved = True
+    Case "option": IsReserved = True
+    Case "event": IsReserved = True
+    Case "in": IsReserved = True
+    Case "error": IsReserved = True
+    Case "property": IsReserved = True
+    Case "ref": IsReserved = True
+    Case "params": IsReserved = True
+    Case "base": IsReserved = True
+    End Select
+    If IsReserved Then ParamName = ParamName & "_"
+Else
+    ParamType = Trimmed
+    ParamName = DefaultName
+End If
+If InStr(ParamName, "[") Then
+    ParamType = ParamType & "*"
+    ParamName = Left$(ParamName, InStr(ParamName, "[") - 1)
+End If
+
+'Determine if using IntPtr is needed or just use ref
+Select Case GetPointerLevel(ParamType)
+Case 0
+    ParamType = DoTypeConvCSharp(ParamType)
+Case 1
+    Select Case ParamType
+    Case "void*"
+        ParamType = "IntPtr"
+    Case "GLvoid*"
+        ParamType = "IntPtr"
+    Case "char*"
+        MarshalType = "[MarshalAs(UnmanagedType.LPStr)] "
+        If HaveConst Then
+            ParamType = "string"
+        Else
+            ParamType = "StringBuilder"
+        End If
+    Case "GLchar*"
+        MarshalType = "[MarshalAs(UnmanagedType.LPStr)] "
+        If HaveConst Then
+            ParamType = "string"
+        Else
+            ParamType = "StringBuilder"
+        End If
+    Case "wchar_t*"
+        MarshalType = "[MarshalAs(UnmanagedType.LPWStr)] "
+        If HaveConst Then
+            ParamType = "string"
+        Else
+            ParamType = "StringBuilder"
+        End If
+    Case Else
+        If HaveConst Then
+            MarshalType = "[MarshalAs(UnmanagedType.LPArray)] "
+            ParamType = DoTypeConvCSharp(Replace(ParamType, "*", "")) & "[]"
+        Else
+            PassType = "ref "
+            ParamType = DoTypeConvCSharp(Replace(ParamType, "*", ""))
+        End If
+    End Select
+Case 2
+    Select Case ParamType
+    Case "char**"
+        ParamType = "string[]"
+        If HaveConst = False Then PassType = "ref "
+    Case "GLchar**"
+        MarshalType = "[MarshalAs(UnmanagedType.LPArray)] "
+        ParamType = "string[]"
+        If HaveConst = False Then PassType = "ref "
+    Case "wchar_t**"
+        MarshalType = "[MarshalAs(UnmanagedType.LPArray)] "
+        ParamType = "IntPtr[]"
+        If HaveConst = False Then PassType = "ref "
+    Case Else
+        ParamType = "IntPtr"
+        If HaveConst = False Then PassType = "ref "
+    End Select
+Case Else
+    PassType = "ref "
+    ParamType = "IntPtr"
+End Select
+
+Select Case ParamType
+Case "Object"
+    MarshalType = "[MarshalAs(UnmanagedType.AsAny)] "
+Case "bool"
+    MarshalType = "[MarshalAs(UnmanagedType.Bool)] "
+End Select
+
+OutCallingParam = PassType & ParamName
+If NoMarshal = False Then DoParamRenameCSharp = MarshalType
+DoParamRenameCSharp = DoParamRenameCSharp & PassType & ParamType & " " & ParamName
+End Function
+
+'Rename the parameters if necessary
+Function DoParamRenameCSharpUnsafe(Param As String, Optional DefaultName As String = "param", Optional OutCallingParam As String = "", Optional ByVal NoMarshal As Boolean = False) As String
+Dim Trimmed As String
+Dim HaveConst As Boolean
+If InStr(Param, "const ") Then HaveConst = True
+If InStr(Param, "const*") Then HaveConst = True
+Trimmed = Trim$(Replace(Param, "const ", ""))
+Trimmed = Trim$(Replace(Trimmed, "const*", "*"))
+Trimmed = Replace(Trimmed, "*", "* ")
+Trimmed = Replace(Trimmed, "  ", " ")
+Trimmed = Replace(Trimmed, " *", "*")
+
+Dim MarshalType As String, PassType As String, ParamType As String, ParamName As String
 Dim DelimPos As Long, IsReserved As Boolean
 DelimPos = InStrRev(Trimmed, " ")
 If DelimPos Then
@@ -540,97 +793,96 @@ End If
 'Determine if using IntPtr is needed or just use ByRef
 Select Case GetPointerLevel(ParamType)
 Case 0
-    PassType = ""
-    ParamType = DoTypeConvCSharp(ParamType)
+    ParamType = DoTypeConvCSharpUnsafe(ParamType)
 Case 1
     Select Case ParamType
     Case "void*"
-        PassType = ""
-        ParamType = "IntPtr"
+        ParamType = "void*"
     Case "GLvoid*"
-        PassType = ""
-        ParamType = "IntPtr"
+        ParamType = "void*"
     Case "char*"
+        MarshalType = "[MarshalAs(UnmanagedType.LPStr)] "
         If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPStr)] "
             ParamType = "string"
         Else
-            PassType = "[MarshalAs(UnmanagedType.LPStr)] "
             ParamType = "StringBuilder"
         End If
     Case "GLchar*"
+        MarshalType = "[MarshalAs(UnmanagedType.LPStr)] "
         If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPStr)] "
             ParamType = "string"
         Else
-            PassType = "[MarshalAs(UnmanagedType.LPStr)] "
             ParamType = "StringBuilder"
         End If
     Case "wchar_t*"
+        MarshalType = "[MarshalAs(UnmanagedType.LPWStr)] "
         If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPWStr)] "
             ParamType = "string"
         Else
-            PassType = "[MarshalAs(UnmanagedType.LPWStr)] "
             ParamType = "StringBuilder"
         End If
     Case Else
-        If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] "
-            ParamType = DoTypeConvCSharp(Replace(ParamType, "*", "")) & "[]"
-        Else
-            PassType = "ref "
-            ParamType = DoTypeConvCSharp(Replace(ParamType, "*", ""))
-        End If
+        ParamType = DoTypeConvCSharpUnsafe(Replace(ParamType, "*", "")) & "*"
     End Select
 Case 2
     Select Case ParamType
     Case "char**"
-        If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] "
-            ParamType = "string[]"
-        Else
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] ref "
-            ParamType = "string[]"
-        End If
+        MarshalType = "[MarshalAs(UnmanagedType.LPArray)] "
+        ParamType = "string[]"
+        If HaveConst = False Then PassType = "ref "
     Case "GLchar**"
-        If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] "
-            ParamType = "string[]"
-        Else
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] ref "
-            ParamType = "string[]"
-        End If
+        MarshalType = "[MarshalAs(UnmanagedType.LPArray)] "
+        ParamType = "string[]"
+        If HaveConst = False Then PassType = "ref "
     Case "wchar_t**"
-        If HaveConst Then
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] "
-            ParamType = "IntPtr[]"
-        Else
-            PassType = "[MarshalAs(UnmanagedType.LPArray)] ref "
-            ParamType = "IntPtr[]"
-        End If
+        MarshalType = "[MarshalAs(UnmanagedType.LPArray)] "
+        ParamType = "IntPtr[]"
+        If HaveConst = False Then PassType = "ref "
     Case Else
-        If HaveConst Then
-            PassType = ""
-            ParamType = "IntPtr"
-        Else
-            PassType = "ref "
-            ParamType = "IntPtr"
-        End If
+        ParamType = DoTypeConvCSharpUnsafe(Replace(ParamType, "*", "")) & "**"
     End Select
 Case Else
-    PassType = "ref "
-    ParamType = "IntPtr"
+    ParamType = DoTypeConvCSharpUnsafe(Replace(ParamType, "*", "")) & String(GetPointerLevel(ParamType), "*")
 End Select
 
 Select Case ParamType
 Case "Object"
-    PassType = "[MarshalAs(UnmanagedType.AsAny)] "
+    MarshalType = "[MarshalAs(UnmanagedType.AsAny)] "
 Case "bool"
-    PassType = "[MarshalAs(UnmanagedType.Bool)] " & PassType
+    MarshalType = "[MarshalAs(UnmanagedType.Bool)] "
 End Select
 
-DoParamRenameCSharp = PassType & ParamType & " " & ParamName
+OutCallingParam = PassType & ParamName
+If NoMarshal = False Then DoParamRenameCSharpUnsafe = MarshalType
+DoParamRenameCSharpUnsafe = DoParamRenameCSharpUnsafe & PassType & ParamType & " " & ParamName
+End Function
+
+'Do type conversion but only for the return type
+Function DoRetTypeConvCSharpUnsafe(RetType As String) As String
+Dim Trimmed As String
+Trimmed = Trim$(Replace(RetType, "const ", ""))
+
+If InStr(Trimmed, "*") Then
+    Trimmed = Replace(Trimmed, " *", "*")
+    Select Case Trimmed
+    'You don't want the memory allocated from an API as a return value freed by CLR
+    Case "GLubyte*"
+        DoRetTypeConvCSharpUnsafe = "byte*"
+    Case "GLchar*"
+        DoRetTypeConvCSharpUnsafe = "byte*"
+    Case "char*"
+        DoRetTypeConvCSharpUnsafe = "byte*"
+    Case "void*"
+        DoRetTypeConvCSharpUnsafe = "void*"
+    Case "wchar_t*"
+        DoRetTypeConvCSharpUnsafe = "char*"
+    Case Else
+        DoRetTypeConvCSharpUnsafe = "void*"
+        Debug.Print Trimmed
+    End Select
+Else
+    DoRetTypeConvCSharpUnsafe = DoTypeConvCSharpUnsafe(Trimmed)
+End If
 End Function
 
 Function GuessConstMacroDefType(MacroDefs As Dictionary, MacroName, OutMacroDef As String) As String
@@ -1394,11 +1646,14 @@ Dim MacroDef As String
 Dim FuncTypeDefName
 Dim FuncPtrType
 Dim FuncName
+Dim ConvertedParam As String
 Dim I As Long, ExtCount As Long
 Dim FuncData() As String
 Dim Param() As String
+Dim ParamName As String
 Dim AlreadyDefinedMacros As New Dictionary
 Dim LabelUsed As Boolean
+Dim HasUnsafe As New Dictionary
 
 Dim FN As Integer
 FN = FreeFile
@@ -1447,52 +1702,114 @@ For Each GLExtString In Parser.GLExtension.Keys
     For Each FuncTypeDefName In Ext.FuncTypeDef.Keys
         FuncData = Split(Ext.FuncTypeDef(FuncTypeDefName), ":")
         Print #FN, vbTab; "[System.Security.SuppressUnmanagedCodeSecurity()]"
-        
-        'Function or Sub
-        If LCase$(FuncData(0)) = "void" Then
-            Print #FN, vbTab; "public delegate void ";
-        Else
-            Print #FN, vbTab; "public delegate "; DoRetTypeConvCSharp(FuncData(0)); " ";
-        End If
-        
-        'Function name
-        Print #FN, FuncTypeDefName; " (";
+        Print #FN, vbTab; "public delegate "; DoRetTypeConvCSharp(FuncData(0)); " "; FuncTypeDefName; " (";
         
         'Parameter list
         If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
             Param = Split(FuncData(1), ",")
             For I = 0 To UBound(Param)
                 If I Then Print #FN, ", ";
-                Print #FN, DoParamRenameCSharp(Param(I), "param" & I);
+                ConvertedParam = DoParamRenameCSharp(Param(I), "param" & I)
+                Print #FN, ConvertedParam;
+                If InStr(ConvertedParam, "*") <> 0 Or InStr(DoParamRenameCSharpUnsafe(Param(I), "param" & I), "*") <> 0 Then HasUnsafe(FuncTypeDefName) = True
             Next
         End If
-        
         Print #FN, ");"
+        
+        If HasUnsafe(FuncTypeDefName) = True Then
+            Print #FN, vbTab; "[System.Security.SuppressUnmanagedCodeSecurity()]"
+            Print #FN, vbTab; "public unsafe delegate "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; FuncTypeDefName; "_UNSAFE (";
+            
+            'Parameter list
+            If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+                Param = Split(FuncData(1), ",")
+                For I = 0 To UBound(Param)
+                    If I Then Print #FN, ", ";
+                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I);
+                Next
+            End If
+            Print #FN, ");"
+        End If
         Print #FN,
     Next
     
     'Function pointer declaration
     For Each FuncPtrType In Ext.FuncPtrs.Keys
         HasFuncPtr = True
-        Print #FN, vbTab; "public readonly "; FuncPtrType; " "; Ext.FuncPtrs(FuncPtrType); ";"
+        If HasUnsafe(FuncPtrType) Then
+            Print #FN, vbTab; "public readonly "; FuncPtrType; " "; Ext.FuncPtrs(FuncPtrType); "_Safe;"
+            Print #FN, vbTab; "public readonly "; FuncPtrType; "_UNSAFE "; Ext.FuncPtrs(FuncPtrType); "_Unsafe;"
+            
+            FuncData = Split(Ext.FuncTypeDef(FuncPtrType), ":")
+            
+            Print #FN, vbTab; "public "; DoRetTypeConvCSharp(FuncData(0)); " "; Ext.FuncPtrs(FuncPtrType); " (";
+            
+            'Parameter list
+            If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+                Param = Split(FuncData(1), ",")
+                For I = 0 To UBound(Param)
+                    If I Then Print #FN, ", ";
+                    Print #FN, DoParamRenameCSharp(Param(I), "param" & I, , True);
+                Next
+            End If
+            
+            Print #FN, ")"
+            Print #FN, vbTab; "{ ";
+            If LCase$(FuncData(0)) <> "void" Then
+                Print #FN, "return ";
+            End If
+            Print #FN, Ext.FuncPtrs(FuncPtrType); "_Safe (";
+            'Calling parameter list
+            If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+                Param = Split(FuncData(1), ",")
+                For I = 0 To UBound(Param)
+                    If I Then Print #FN, ", ";
+                    DoParamRenameCSharp Param(I), "param" & I, ParamName
+                    Print #FN, ParamName;
+                Next
+            End If
+            Print #FN, "); }"
+            
+            Print #FN, vbTab; "public unsafe "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; Ext.FuncPtrs(FuncPtrType); " (";
+            
+            'Parameter list
+            If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+                Param = Split(FuncData(1), ",")
+                For I = 0 To UBound(Param)
+                    If I Then Print #FN, ", ";
+                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I, , True);
+                Next
+            End If
+            
+            Print #FN, ")"
+            Print #FN, vbTab; "{ ";
+            If LCase$(FuncData(0)) <> "void" Then
+                Print #FN, "return ";
+            End If
+            Print #FN, Ext.FuncPtrs(FuncPtrType); "_Unsafe (";
+            'Calling parameter list
+            If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+                Param = Split(FuncData(1), ",")
+                For I = 0 To UBound(Param)
+                    If I Then Print #FN, ", ";
+                    DoParamRenameCSharpUnsafe Param(I), "param" & I, ParamName
+                    Print #FN, ParamName;
+                Next
+            End If
+            Print #FN, "); }"
+            
+        Else
+            Print #FN, vbTab; "public readonly "; FuncPtrType; " "; Ext.FuncPtrs(FuncPtrType); ";"
+        End If
     Next
     If HasFuncPtr Then Print #FN,
     
     'API declaration
     For Each FuncName In Ext.APIs.Keys
         HasAPI = True
-        Print #FN, vbTab; "[DllImport("""; Ext.API_DllName; """)]"
         FuncData = Split(Ext.APIs(FuncName), ":")
-        
-        'Function or Sub
-        If LCase$(FuncData(0)) = "void" Then
-            Print #FN, vbTab; "public static extern void ";
-        Else
-            Print #FN, vbTab; "public static extern "; DoRetTypeConvCSharp(FuncData(0)); " ";
-        End If
-        
-        'Function name and Dll name
-        Print #FN, FuncName; " (";
+        Print #FN, vbTab; "[DllImport("""; Ext.API_DllName; """)]"
+        Print #FN, vbTab; "public static extern "; DoRetTypeConvCSharp(FuncData(0)); " "; FuncName; " (";
         
         'Parameter list
         If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
@@ -1502,8 +1819,23 @@ For Each GLExtString In Parser.GLExtension.Keys
                 Print #FN, DoParamRenameCSharp(Param(I), "param" & I);
             Next
         End If
-        
         Print #FN, ");"
+        
+        If InStr(FuncData(1), "*") Then
+            Print #FN, vbTab; "[DllImport("""; Ext.API_DllName; """)]"
+            Print #FN, vbTab; "public static extern unsafe "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; FuncName; " (";
+            
+            'Parameter list
+            If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
+                Param = Split(FuncData(1), ",")
+                For I = 0 To UBound(Param)
+                    If I Then Print #FN, ", ";
+                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I);
+                Next
+            End If
+            
+            Print #FN, ");"
+        End If
     Next
     If HasAPI Then Print #FN,
     
@@ -1662,7 +1994,12 @@ For Each GLExtString In Parser.GLExtension.Keys
         FuncName = Ext.FuncPtrs(FuncPtrType)
         Print #FN, vbTab; vbTab; vbTab; "FuncPtr = wglGetProcAddress("""; FuncName; """);"
         Print #FN, vbTab; vbTab; vbTab; "if (FuncPtr == IntPtr.Zero) goto EndOf_"; GLExtString; ";"
-        Print #FN, vbTab; vbTab; vbTab; FuncName; " = ("; FuncPtrType; ")Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "));"
+        If HasUnsafe(FuncPtrType) Then
+            Print #FN, vbTab; vbTab; vbTab; FuncName; "_Safe = ("; FuncPtrType; ")Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "));"
+            Print #FN, vbTab; vbTab; vbTab; FuncName; "_Unsafe = ("; FuncPtrType; "_UNSAFE)Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "_UNSAFE));"
+        Else
+            Print #FN, vbTab; vbTab; vbTab; FuncName; " = ("; FuncPtrType; ")Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "));"
+        End If
         Print #FN,
         LabelUsed = True
     Next
@@ -1732,31 +2069,31 @@ Print #FN, vbTab; vbTab; "public UInt32 dwVisibleMask;"
 Print #FN, vbTab; vbTab; "public UInt32 dwDamageMask;"
 Print #FN, vbTab; "}"
 Print #FN,
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""gdi32.dll"")]"
+Print #FN, vbTab; "[DllImport(""gdi32.dll"")]"
 Print #FN, vbTab; "public static extern Int32 ChoosePixelFormat(IntPtr hDC, ref PIXELFORMATDESCRIPTOR pfd);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""gdi32.dll"")]"
+Print #FN, vbTab; "[DllImport(""gdi32.dll"")]"
 Print #FN, vbTab; "public static extern bool SetPixelFormat(IntPtr hDC, Int32 pm, ref PIXELFORMATDESCRIPTOR pfd);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern IntPtr wglCreateContext(IntPtr hDC);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern IntPtr wglGetCurrentDC();"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern IntPtr wglGetCurrentContext();"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern bool wglMakeCurrent(IntPtr hDC, IntPtr hGLRC);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern bool wglDeleteContext(IntPtr hGLRC);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern bool wglSwapBuffers(IntPtr hDC);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""user32.dll"")]"
+Print #FN, vbTab; "[DllImport(""user32.dll"")]"
 Print #FN, vbTab; "public static extern IntPtr GetDC(IntPtr hWnd);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""user32.dll"")]"
+Print #FN, vbTab; "[DllImport(""user32.dll"")]"
 Print #FN, vbTab; "public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern bool wglUseFontBitmaps(IntPtr hDC, UInt32 first, UInt32 count, UInt32 listBase);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""gdi32.dll"")]"
+Print #FN, vbTab; "[DllImport(""gdi32.dll"")]"
 Print #FN, vbTab; "public static extern bool SwapBuffers(IntPtr hDC);"
-Print #FN, vbTab; "[System.Runtime.InteropServices.DllImport(""opengl32.dll"")]"
+Print #FN, vbTab; "[DllImport(""opengl32.dll"")]"
 Print #FN, vbTab; "public static extern IntPtr wglGetProcAddress(string ProcName);"
 Print #FN,
 Print #FN, vbTab; "#endregion"

@@ -86,7 +86,9 @@ Option Explicit
 Public HeaderParse As New clsParser
 
 Private Sub Form_Load()
-Show
+Dim NoGUI As Boolean
+If Command = "nogui" Then NoGUI = True
+If NoGUI = False Then Show
 
 'Parse the header files immediately
 HeaderParse.ParseHeaderFile App.Path & "\glew.h", "glew"
@@ -96,6 +98,11 @@ HeaderParse.ParseHeaderFile App.Path & "\wglew.h", "wglew"
 ExportVB_NET HeaderParse, App.Path & "\modGL_API.vb"
 ExportVB_NET2 HeaderParse, App.Path & "\GL_API.vb"
 ExportCSharp HeaderParse, App.Path & "\GLAPI.cs"
+
+If NoGUI Then
+    Unload Me
+    Exit Sub
+End If
 
 'Show in the TreeView
 Dim ExtensionString
