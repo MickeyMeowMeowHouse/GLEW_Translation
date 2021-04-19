@@ -642,7 +642,7 @@ Do While MacroDefs.Exists(MacroDef)
 Loop
 If IsNumeric(MacroDef) Then
     If Int(MacroDef) = Val(MacroDef) And Abs(MacroDef) <= 4294967295# Then
-        GuessConstMacroDefType = "uint "
+        GuessConstMacroDefType = "int "
     Else
         GuessConstMacroDefType = "double "
     End If
@@ -650,8 +650,13 @@ ElseIf Left$(MacroDef, 2) = "0x" Then
     If Right$(MacroDef, 3) = "ull" Then
         GuessConstMacroDefType = "ulong "
         If OutMacroDef = MacroDef Then OutMacroDef = Left$(OutMacroDef, Len(OutMacroDef) - 3)
-    Else
+    ElseIf Right$(MacroDef, 1) = "u" Or Right$(MacroDef, 2) = "ul" Then
         GuessConstMacroDefType = "uint "
+    Else
+        GuessConstMacroDefType = "int "
+        Dim Value As Long
+        Value = CLng("&H" & Mid$(MacroDef, 3))
+        If Value < 0 Then OutMacroDef = "unchecked((int)" & MacroDef & ")"
     End If
 Else
     GuessConstMacroDefType = "string "
@@ -1575,7 +1580,7 @@ Print #FN, vbTab; "#endregion"
 Print #FN,
 Print #FN, vbTab; "#region ""OpenGL Extension Initialize"""
 Print #FN,
-Print #FN, vbTab; "GLAPI()"
+Print #FN, vbTab; "public GLAPI()"
 Print #FN, vbTab; "{"
 Print #FN, vbTab; vbTab; "uint i;"
 Print #FN, vbTab; vbTab; "int ExtCount = 0;"
@@ -1585,7 +1590,7 @@ Print #FN, vbTab; vbTab; "string[] VendorSplit;"
 Print #FN, vbTab; vbTab; "string[] VersionSplit;"
 Print #FN, vbTab; vbTab; "int Major, Minor;"
 Print #FN, vbTab; vbTab; "Dictionary<string, uint> IndexOfExtensionDict = GLAPI_CreateIndexOfExtensionDict();"
-Print #FN, vbTab; vbTab; "bool[] Extensions_Supported = new bool["; CStr(ExtCount - 1); "];"
+Print #FN, vbTab; vbTab; "bool[] Extensions_Supported = new bool["; CStr(ExtCount); "];"
 Print #FN,
 Print #FN, vbTab; vbTab; "VersionString = Marshal.PtrToStringAnsi(glGetString(GL_VERSION));"
 Print #FN, vbTab; vbTab; "VendorSplit = VersionString.Split();"
