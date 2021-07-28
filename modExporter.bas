@@ -39,6 +39,14 @@ Next
 Set MergeDict = Ret
 End Function
 
+Function MatchPrefix(ByVal Str_ As String, ByVal Prefix As String, Optional ByVal CaseSensitive As Boolean = True) As Boolean
+If CaseSensitive Then
+    If Left$(Str_, Len(Prefix)) = Prefix Then MatchPrefix = True
+Else
+    If Left$(UCase$(Str_), Len(Prefix)) = UCase$(Prefix) Then MatchPrefix = True
+End If
+End Function
+
 'Do type conversions
 Function DoTypeConvVB_NET(TypeDesc As String) As String
 Select Case TypeDesc
@@ -353,7 +361,6 @@ Else
 End If
 End Function
 
-
 'Do type conversions
 Function DoTypeConvCSharpUnsafe(TypeDesc As String) As String
 Select Case TypeDesc
@@ -630,8 +637,22 @@ End Select
 DoParamRenameVB_NET = PassType & ParamName & " As " & ParamType
 End Function
 
+Function TheFunctionIsglGetSomething(ByVal FunctionName As String) As Boolean
+If MatchPrefix(FunctionName, "PFNGLGET", False) Or _
+   MatchPrefix(FunctionName, "PFNWGLGET", False) Or _
+   MatchPrefix(FunctionName, "glGet", True) Or _
+   MatchPrefix(FunctionName, "wglGet", True) Then TheFunctionIsglGetSomething = True
+End Function
+
+Function TheFunctionIsglGenSomething(ByVal FunctionName As String) As Boolean
+If MatchPrefix(FunctionName, "PFNGLGEN", False) Or _
+   MatchPrefix(FunctionName, "PFNWGLGEN", False) Or _
+   MatchPrefix(FunctionName, "glGen", True) Or _
+   MatchPrefix(FunctionName, "wglGen", True) Then TheFunctionIsglGenSomething = True
+End Function
+
 'Rename the parameters if necessary
-Function DoParamRenameCSharp(Param As String, Optional DefaultName As String = "param", Optional OutCallingParam As String = "", Optional ByVal NoMarshal As Boolean = False) As String
+Function DoParamRenameCSharp(Param As String, Optional DefaultName As String = "param", Optional ByVal FunctionName As String = "", Optional OutCallingParam As String = "", Optional ByVal NoMarshal As Boolean = False) As String
 Dim Trimmed As String
 Dim HaveConst As Boolean
 If InStr(Param, "const ") Then HaveConst = True
@@ -748,7 +769,7 @@ DoParamRenameCSharp = DoParamRenameCSharp & PassType & ParamType & " " & ParamNa
 End Function
 
 'Rename the parameters if necessary
-Function DoParamRenameCSharpUnsafe(Param As String, Optional DefaultName As String = "param", Optional OutCallingParam As String = "", Optional ByVal NoMarshal As Boolean = False) As String
+Function DoParamRenameCSharpUnsafe(Param As String, Optional DefaultName As String = "param", Optional ByVal FunctionName As String = "", Optional OutCallingParam As String = "", Optional ByVal NoMarshal As Boolean = False) As String
 Dim Trimmed As String
 Dim HaveConst As Boolean
 If InStr(Param, "const ") Then HaveConst = True
@@ -1658,6 +1679,9 @@ Dim HasUnsafe As New Dictionary
 Dim FN As Integer
 FN = FreeFile
 Open ExportTo For Output As #FN
+Print #FN, "#define CSHARPGLEW_ALLOW_UNSAFE"
+Print #FN, "#undef CSHARPGLEW_ALLOW_UNSAFE"
+Print #FN,
 Print #FN, "using System;"
 Print #FN, "using System.Text;"
 Print #FN, "using System.Collections.Generic;"
@@ -1668,7 +1692,7 @@ Print #FN,
 Print #FN, "namespace CSharpGLEW"
 Print #FN, "{"
 Print #FN,
-Print #FN, vbTab; "class GLAPI"
+Print #FN, vbTab; "partial class GLAPI"
 Print #FN, vbTab; "{"
 
 Print #FN, vbTab; vbTab; "#region ""OpenGL Extension Declerations"""
@@ -1712,14 +1736,15 @@ For Each GLExtString In Parser.GLExtension.Keys
             Param = Split(FuncData(1), ",")
             For I = 0 To UBound(Param)
                 If I Then Print #FN, ", ";
-                ConvertedParam = DoParamRenameCSharp(Param(I), "param" & I)
+                ConvertedParam = DoParamRenameCSharp(Param(I), "param" & I, FuncTypeDefName)
                 Print #FN, ConvertedParam;
-                If InStr(ConvertedParam, "*") <> 0 Or InStr(DoParamRenameCSharpUnsafe(Param(I), "param" & I), "*") <> 0 Then HasUnsafe(FuncTypeDefName) = True
+                If InStr(ConvertedParam, "*") <> 0 Or InStr(DoParamRenameCSharpUnsafe(Param(I), "param" & I, FuncTypeDefName), "*") <> 0 Then HasUnsafe(FuncTypeDefName) = True
             Next
         End If
         Print #FN, ");"
         
         If HasUnsafe(FuncTypeDefName) = True Then
+            Print #FN, vbTab; vbTab; "#if CSHARPGLEW_ALLOW_UNSAFE"
             Print #FN, vbTab; vbTab; "[System.Security.SuppressUnmanagedCodeSecurity()]"
             Print #FN, vbTab; vbTab; "public unsafe delegate "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; FuncTypeDefName; "_UNSAFE (";
             
@@ -1728,10 +1753,11 @@ For Each GLExtString In Parser.GLExtension.Keys
                 Param = Split(FuncData(1), ",")
                 For I = 0 To UBound(Param)
                     If I Then Print #FN, ", ";
-                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I);
+                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I, FuncTypeDefName);
                 Next
             End If
             Print #FN, ");"
+            Print #FN, vbTab; vbTab; "#endif // CSHARPGLEW_ALLOW_UNSAFE"
         End If
         Print #FN,
     Next
@@ -1739,20 +1765,23 @@ For Each GLExtString In Parser.GLExtension.Keys
     'Function pointer declaration
     For Each FuncPtrType In Ext.FuncPtrs.Keys
         HasFuncPtr = True
+        FuncName = Ext.FuncPtrs(FuncPtrType)
         If HasUnsafe(FuncPtrType) Then
-            Print #FN, vbTab; vbTab; "public readonly "; FuncPtrType; " "; Ext.FuncPtrs(FuncPtrType); "_Safe;"
-            Print #FN, vbTab; vbTab; "public readonly "; FuncPtrType; "_UNSAFE "; Ext.FuncPtrs(FuncPtrType); "_Unsafe;"
+            Print #FN, vbTab; vbTab; "public readonly "; FuncPtrType; " "; FuncName; "_Safe;"
+            Print #FN, vbTab; vbTab; "#if CSHARPGLEW_ALLOW_UNSAFE"
+            Print #FN, vbTab; vbTab; "public readonly "; FuncPtrType; "_UNSAFE "; FuncName; "_Unsafe;"
+            Print #FN, vbTab; vbTab; "#endif // CSHARPGLEW_ALLOW_UNSAFE"
             
             FuncData = Split(Ext.FuncTypeDef(FuncPtrType), ":")
             
-            Print #FN, vbTab; vbTab; "public "; DoRetTypeConvCSharp(FuncData(0)); " "; Ext.FuncPtrs(FuncPtrType); " (";
+            Print #FN, vbTab; vbTab; "public "; DoRetTypeConvCSharp(FuncData(0)); " "; FuncName; " (";
             
             'Parameter list
             If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
                 Param = Split(FuncData(1), ",")
                 For I = 0 To UBound(Param)
                     If I Then Print #FN, ", ";
-                    Print #FN, DoParamRenameCSharp(Param(I), "param" & I, , True);
+                    Print #FN, DoParamRenameCSharp(Param(I), "param" & I, FuncName, , True);
                 Next
             End If
             
@@ -1761,26 +1790,28 @@ For Each GLExtString In Parser.GLExtension.Keys
             If LCase$(FuncData(0)) <> "void" Then
                 Print #FN, "return ";
             End If
-            Print #FN, Ext.FuncPtrs(FuncPtrType); "_Safe (";
+            Print #FN, FuncName; "_Safe (";
             'Calling parameter list
             If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
                 Param = Split(FuncData(1), ",")
                 For I = 0 To UBound(Param)
                     If I Then Print #FN, ", ";
-                    DoParamRenameCSharp Param(I), "param" & I, ParamName
+                    DoParamRenameCSharp Param(I), "param" & I, FuncName, ParamName
                     Print #FN, ParamName;
                 Next
             End If
             Print #FN, "); }"
             
-            Print #FN, vbTab; vbTab; "public unsafe "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; Ext.FuncPtrs(FuncPtrType); " (";
+            
+            Print #FN, vbTab; vbTab; "#if CSHARPGLEW_ALLOW_UNSAFE"
+            Print #FN, vbTab; vbTab; "public unsafe "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; FuncName; " (";
             
             'Parameter list
             If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
                 Param = Split(FuncData(1), ",")
                 For I = 0 To UBound(Param)
                     If I Then Print #FN, ", ";
-                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I, , True);
+                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I, FuncName, , True);
                 Next
             End If
             
@@ -1789,20 +1820,21 @@ For Each GLExtString In Parser.GLExtension.Keys
             If LCase$(FuncData(0)) <> "void" Then
                 Print #FN, "return ";
             End If
-            Print #FN, Ext.FuncPtrs(FuncPtrType); "_Unsafe (";
+            Print #FN, FuncName; "_Unsafe (";
             'Calling parameter list
             If Len(FuncData(1)) > 0 And LCase$(FuncData(1)) <> "void" Then
                 Param = Split(FuncData(1), ",")
                 For I = 0 To UBound(Param)
                     If I Then Print #FN, ", ";
-                    DoParamRenameCSharpUnsafe Param(I), "param" & I, ParamName
+                    DoParamRenameCSharpUnsafe Param(I), "param" & I, FuncName, ParamName
                     Print #FN, ParamName;
                 Next
             End If
             Print #FN, "); }"
+            Print #FN, vbTab; vbTab; "#endif // CSHARPGLEW_ALLOW_UNSAFE"
             
         Else
-            Print #FN, vbTab; vbTab; "public readonly "; FuncPtrType; " "; Ext.FuncPtrs(FuncPtrType); ";"
+            Print #FN, vbTab; vbTab; "public readonly "; FuncPtrType; " "; FuncName; ";"
         End If
     Next
     If HasFuncPtr Then Print #FN,
@@ -1819,12 +1851,13 @@ For Each GLExtString In Parser.GLExtension.Keys
             Param = Split(FuncData(1), ",")
             For I = 0 To UBound(Param)
                 If I Then Print #FN, ", ";
-                Print #FN, DoParamRenameCSharp(Param(I), "param" & I);
+                Print #FN, DoParamRenameCSharp(Param(I), "param" & I, FuncTypeDefName);
             Next
         End If
         Print #FN, ");"
         
         If InStr(FuncData(1), "*") Then
+            Print #FN, vbTab; vbTab; "#if CSHARPGLEW_ALLOW_UNSAFE"
             Print #FN, vbTab; vbTab; "[DllImport("""; Ext.API_DllName; """)]"
             Print #FN, vbTab; vbTab; "public static extern unsafe "; DoRetTypeConvCSharpUnsafe(FuncData(0)); " "; FuncName; " (";
             
@@ -1833,11 +1866,12 @@ For Each GLExtString In Parser.GLExtension.Keys
                 Param = Split(FuncData(1), ",")
                 For I = 0 To UBound(Param)
                     If I Then Print #FN, ", ";
-                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I);
+                    Print #FN, DoParamRenameCSharpUnsafe(Param(I), "param" & I, FuncTypeDefName);
                 Next
             End If
             
             Print #FN, ");"
+            Print #FN, vbTab; vbTab; "#endif // CSHARPGLEW_ALLOW_UNSAFE"
         End If
     Next
     If HasAPI Then Print #FN,
@@ -1999,7 +2033,9 @@ For Each GLExtString In Parser.GLExtension.Keys
         Print #FN, vbTab; vbTab; vbTab; vbTab; "if (FuncPtr == IntPtr.Zero) goto EndOf_"; GLExtString; ";"
         If HasUnsafe(FuncPtrType) Then
             Print #FN, vbTab; vbTab; vbTab; vbTab; FuncName; "_Safe = ("; FuncPtrType; ")Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "));"
+            Print #FN, vbTab; vbTab; "#if CSHARPGLEW_ALLOW_UNSAFE"
             Print #FN, vbTab; vbTab; vbTab; vbTab; FuncName; "_Unsafe = ("; FuncPtrType; "_UNSAFE)Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "_UNSAFE));"
+            Print #FN, vbTab; vbTab; "#endif // CSHARPGLEW_ALLOW_UNSAFE"
         Else
             Print #FN, vbTab; vbTab; vbTab; vbTab; FuncName; " = ("; FuncPtrType; ")Marshal.GetDelegateForFunctionPointer(FuncPtr, typeof("; FuncPtrType; "));"
         End If
