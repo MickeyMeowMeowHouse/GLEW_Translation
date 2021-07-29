@@ -969,7 +969,7 @@ Dim LabelUsed As Boolean
 
 Dim FN As Integer
 FN = FreeFile
-Open ExportTo For Output As #FN
+Open ExportTo & "\modGL_API.vb" For Output As #FN
 Print #FN, "Imports System.Runtime.InteropServices"
 Print #FN, "Imports System.Text"
 Print #FN,
@@ -1318,7 +1318,7 @@ Dim LabelUsed As Boolean
 
 Dim FN As Integer
 FN = FreeFile
-Open ExportTo For Output As #FN
+Open ExportTo & "\GL_API.vb" For Output As #FN
 Print #FN, "Imports System.Runtime.InteropServices"
 Print #FN, "Imports System.Text"
 Print #FN,
@@ -1658,6 +1658,145 @@ Print #FN,
 Close #FN
 End Sub
 
+Function SuffixToCSharpType(ByVal Suffix As String) As String
+Select Case Suffix
+Case "b": SuffixToCSharpType = "sbyte"
+Case "ub": SuffixToCSharpType = "byte"
+Case "s": SuffixToCSharpType = "short"
+Case "us": SuffixToCSharpType = "ushort"
+Case "i": SuffixToCSharpType = "int"
+Case "ui": SuffixToCSharpType = "uint"
+Case "i64": SuffixToCSharpType = "long"
+Case "ui64": SuffixToCSharpType = "ulong"
+Case "f": SuffixToCSharpType = "float"
+Case "d": SuffixToCSharpType = "double"
+
+Case "bv": SuffixToCSharpType = "sbyte*"
+Case "ubv": SuffixToCSharpType = "byte*"
+Case "sv": SuffixToCSharpType = "short*"
+Case "usv": SuffixToCSharpType = "ushort*"
+Case "iv": SuffixToCSharpType = "int*"
+Case "uiv": SuffixToCSharpType = "uint*"
+Case "i64v": SuffixToCSharpType = "long*"
+Case "ui64v": SuffixToCSharpType = "ulong*"
+Case "fv": SuffixToCSharpType = "float*"
+Case "dv": SuffixToCSharpType = "double*"
+
+Case Else
+    Debug.Assert False
+End Select
+End Function
+
+Sub ExportOverloads(ByVal FN As Integer, ByVal IsStatic As Boolean, ReturnType As String, FuncName As String, PreParamDef As String, PreParamCall As String, CallParamVariant As String, Suffixes As String, Optional ByVal Indents As Long = 2, Optional ByVal NoV As Boolean = False, Optional ByVal HideVarCount As Boolean = False, Optional ByVal RefParam As Boolean = False)
+Dim Tabs As String, I As Long, J As Long, K As Long, L As Long, U As Long, HasUnsafe As Boolean, ParamType As String
+Dim ParamVarCount As Long, CallParamVarList() As String
+Dim ParamCount As Long, CallParamLists(), ParamCountStr As String
+Dim SuffixList() As String
+Dim FuncMod As String
+Dim ParamMod As String
+Tabs = String(Indents, vbTab)
+CallParamVarList = Split(CallParamVariant, "|")
+ParamVarCount = UBound(CallParamVarList) + 1
+ReDim CallParamLists(ParamVarCount - 1)
+For I = 0 To ParamVarCount - 1
+    CallParamLists(I) = Split(CallParamVarList(I), ",")
+Next
+
+SuffixList = Split(Suffixes, ",")
+If NoV Then
+    For I = 0 To UBound(SuffixList)
+        If Right$(SuffixList(I), 1) = "v" Then SuffixList(I) = Left$(SuffixList(I), Len(SuffixList(I)) - 1)
+    Next
+End If
+
+If IsStatic Then FuncMod = "static "
+
+For I = 0 To UBound(SuffixList)
+    ParamType = SuffixToCSharpType(SuffixList(I))
+    HasUnsafe = (Right$(ParamType, 1) = "*") Or NoV
+    If NoV Then ParamType = ParamType & "*"
+    If HasUnsafe = False Then
+        For K = 0 To ParamVarCount - 1
+            ParamCount = UBound(CallParamLists(K)) + 1
+            Print #FN, Tabs; "public "; FuncMod; ReturnType; " "; FuncName; "("; PreParamDef;
+            For J = 0 To ParamCount - 1
+                Print #FN, ParamType; " "; CallParamLists(K)(J);
+                If J < ParamCount - 1 Then Print #FN, ", ";
+            Next
+            Print #FN, ")"
+            Print #FN, Tabs; "{"
+            Print #FN, Tabs; vbTab;
+            If ReturnType <> "void" Then Print #FN, "return ";
+            Print #FN, FuncName;
+            If HideVarCount = False Then Print #FN, CStr(ParamCount);
+            Print #FN, SuffixList(I); "("; PreParamCall;
+            For J = 0 To ParamCount - 1
+                If ParamType = "sbyte" Then Print #FN, "(byte)";
+                Print #FN, CallParamLists(K)(J);
+                If J < ParamCount - 1 Then Print #FN, ", ";
+            Next
+            Print #FN, ");"
+            Print #FN, Tabs; "}"
+        Next
+    Else
+        ParamType = Left$(ParamType, Len(ParamType) - 1)
+        If RefParam Then ParamMod = "ref "
+        
+        Print #FN, Tabs; "public "; FuncMod; ReturnType; " "; FuncName; "("; PreParamDef; ParamMod; ParamType; "[] v)"
+        Print #FN, Tabs; "{"
+        If ParamVarCount Then
+            Print #FN, Tabs; vbTab; "switch(v.Length)"
+            Print #FN, Tabs; vbTab; "{"
+            For J = 1 To ParamVarCount
+                ParamCount = UBound(CallParamLists(J - 1)) + 1
+                Print #FN, Tabs; vbTab; "case "; CStr(ParamCount); ": ";
+                If ReturnType <> "void" Then Print #FN, "return ";
+                Print #FN, FuncName;
+                If HideVarCount = False Then Print #FN, CStr(ParamCount);
+                Print #FN, SuffixList(I); "("; PreParamCall; ParamMod;
+                If RefParam Then
+                    If ParamType = "sbyte" Then Print #FN, "(byte)";
+                    Print #FN, "v[0]);";
+                Else
+                    If ParamType = "sbyte" Then Print #FN, "(byte[])(Array)";
+                    Print #FN, "v);";
+                End If
+                If ReturnType <> "void" Then Print #FN, Else Print #FN, " break;"
+            Next
+            Print #FN, Tabs; vbTab; "default: System.Diagnostics.Debug.Assert(false); break;"
+            Print #FN, Tabs; vbTab; "}"
+        Else
+            ParamCount = UBound(CallParamLists(0)) + 1
+            Print #FN, Tabs; vbTab;
+            If ReturnType <> "void" Then Print #FN, "return ";
+            If RefParam Then
+                Print #FN, FuncName; CStr(ParamCount); SuffixList(I); "("; PreParamCall; ParamMod; "v[0]);"
+            Else
+                Print #FN, FuncName; CStr(ParamCount); SuffixList(I); "("; PreParamCall; ParamMod; "v);"
+            End If
+        End If
+        Print #FN, Tabs; "}"
+        
+        Print #FN, Tabs; "#if CSHARPGLEW_ALLOW_UNSAFE"
+        For J = 1 To ParamVarCount
+            ParamCount = UBound(CallParamLists(J - 1)) + 1
+            Print #FN, Tabs; "public "; FuncMod; "unsafe "; ReturnType; " "; FuncName;
+            If HideVarCount = False Then Print #FN, CStr(ParamCount);
+            Print #FN, "("; PreParamDef; ParamType; "* v)"
+            Print #FN, Tabs; "{"
+            Print #FN, Tabs; vbTab;
+            If ReturnType <> "void" Then Print #FN, "return ";
+            Print #FN, FuncName;
+            If HideVarCount = False Then Print #FN, CStr(ParamCount);
+            Print #FN, SuffixList(I); "("; PreParamCall;
+            If ParamType = "sbyte" Then Print #FN, "(byte*)";
+            Print #FN, "v);"
+            Print #FN, Tabs; "}"
+        Next
+        Print #FN, Tabs; "#endif // CSHARPGLEW_ALLOW_UNSAFE"
+    End If
+Next
+End Sub
 
 Sub ExportCSharp(Parser As clsParser, ExportTo As String)
 Dim GLExtString
@@ -1678,7 +1817,7 @@ Dim HasUnsafe As New Dictionary
 
 Dim FN As Integer
 FN = FreeFile
-Open ExportTo For Output As #FN
+Open ExportTo & "\GLAPI.cs" For Output As #FN
 Print #FN, "#define CSHARPGLEW_ALLOW_UNSAFE"
 Print #FN, "#undef CSHARPGLEW_ALLOW_UNSAFE"
 Print #FN,
@@ -2142,5 +2281,56 @@ Print #FN,
 Print #FN, "#pragma warning restore IDE1006, CS0649"
 Print #FN,
 Close #FN
+
+Open ExportTo & "\GLAPI_Overloads.cs" For Output As #FN
+Print #FN, "#define CSHARPGLEW_ALLOW_UNSAFE"
+Print #FN, "#undef CSHARPGLEW_ALLOW_UNSAFE"
+Print #FN,
+Print #FN, "using System;"
+Print #FN,
+Print #FN, "#pragma warning disable IDE1006"
+Print #FN,
+Print #FN, "namespace CSharpGLEW"
+Print #FN, "{"
+Print #FN, vbTab; "partial class GLAPI"
+Print #FN, vbTab; "{"
+ExportOverloads FN, True, "void", "glColor", "", "", "red,green,blue|red,green,blue,alpha", "b,ub,s,us,i,ui,f,d,bv,ubv,sv,usv,iv,uiv,fv,dv"
+ExportOverloads FN, True, "void", "glVertex", "", "", "x,y|x,y,z|x,y,z,w", "s,i,f,d,sv,iv,fv,dv"
+ExportOverloads FN, True, "void", "glTexCoord", "", "", "x,y|x,y,z|x,y,z,w", "s,i,f,d,sv,iv,fv,dv"
+ExportOverloads FN, True, "void", "glNormal", "", "", "x,y,z", "b,s,i,f,d,bv,sv,iv,fv,dv"
+ExportOverloads FN, True, "void", "glEvalCoord", "", "", "u|u,v", "f,d,fv,dv"
+ExportOverloads FN, True, "void", "glFog", "uint pname, ", "pname, ", "param", "f,i,fv,iv", , , True
+ExportOverloads FN, True, "void", "glGetLight", "uint light, uint pname, ", "light, pname, ", "ref params", "fv,iv", , , True, True
+ExportOverloads FN, True, "void", "glGetMap", "uint target, uint query, ", "target, query, ", "ref v", "fv,dv,iv", , , True, True
+ExportOverloads FN, True, "void", "glGetMaterial", "uint face, uint pname, ", "face, pname, ", "ref params", "fv,iv", , , True, True
+ExportOverloads FN, True, "void", "glGetPixelMap", "uint map, ", "map, ", "ref values", "fv,uiv,usv", , , True, True
+ExportOverloads FN, True, "void", "glGetTexEnv", "uint target, uint pname, ", "target, pname, ", "ref params", "fv,iv", , , True, True
+ExportOverloads FN, True, "void", "glGetTexGen", "uint coord, uint pname, ", "coord, pname, ", "ref params", "dv,fv,iv", , , True, True
+ExportOverloads FN, True, "void", "glGetTexLevelParameter", "uint target, int level, uint pname, ", "target, level, pname, ", "ref params", "fv,iv", , , True, True
+ExportOverloads FN, True, "void", "glGetTexParameter", "uint target, uint pname, ", "target, pname, ", "ref params", "fv,iv", , , True, True
+ExportOverloads FN, True, "void", "glIndex", "", "", "c", "d,dv,f,fv,i,iv,s,sv,ub,ubv", , , True
+ExportOverloads FN, True, "void", "glLightModel", "uint pname, ", "pname, ", "param", "f,fv,i,iv", , , True
+ExportOverloads FN, True, "void", "glLight", "uint light, uint pname, ", "light, pname, ", "param", "f,fv,i,iv", , , True
+ExportOverloads FN, True, "void", "glLoadMatrix", "", "", "m", "d,f", , True, True
+ExportOverloads FN, True, "void", "glMaterial", "uint face, uint pname, ", "face, pname, ", "param", "f,fv,i,iv", , , True
+ExportOverloads FN, True, "void", "glMultMatrix", "", "", "m", "d,f", , True, True
+ExportOverloads FN, True, "void", "glPixelMap", "uint map, int mapsize, ", "map, mapsize, ", "values", "fv,uiv,usv", , , True
+ExportOverloads FN, True, "void", "glPixelStore", "uint pname, ", "pname, ", "param", "f,i", , , True
+ExportOverloads FN, True, "void", "glPixelTransfer", "uint pname, ", "pname, ", "param", "f,i", , , True
+ExportOverloads FN, True, "void", "glRasterPos", "", "", "x,y|x,y,z|x,y,z,w", "d,dv,f,fv,i,iv,s,sv"
+ExportOverloads FN, True, "void", "glRect", "", "", "x1,y1,x2,y2", "d,f,i,s", , , True
+ExportOverloads FN, True, "void", "glRotate", "", "", "angle,x,y,z", "d,f", , , True
+ExportOverloads FN, True, "void", "glScale", "", "", "x,y,z", "d,f", , , True
+ExportOverloads FN, True, "void", "glTexEnv", "uint target, uint pname, ", "target, pname, ", "param", "f,fv,i,iv", , , True
+ExportOverloads FN, True, "void", "glTexGen", "uint coord, uint pname, ", "coord, pname, ", "param", "d,dv,f,fv,i,iv", , , True
+ExportOverloads FN, True, "void", "glTexParameter", "uint target, uint pname, ", "target, pname, ", "param", "f,fv,i,iv", , , True
+ExportOverloads FN, True, "void", "glTranslate", "", "", "x,y,z", "d,f", , , True
+Print #FN, vbTab; "}"
+Print #FN, "}"
+Print #FN,
+Print #FN, "#pragma warning restore IDE1006"
+Print #FN,
+Close #FN
+
 End Sub
 
